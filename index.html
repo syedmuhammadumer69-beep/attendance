@@ -6,13 +6,13 @@
     <title>APS&C E-Attendance Portal</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 750px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .header { text-align: center; border-bottom: 2px solid #1b4d3e; padding-bottom: 15px; margin-bottom: 20px; }
         .header h2 { color: #1b4d3e; margin: 0 0 5px 0; font-size: 22px; }
         .header p { margin: 3px 0; font-size: 14px; color: #555; }
         
         .controls { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .control-group { flex: 1; min-width: 200px; }
+        .control-group { flex: 1; min-width: 150px; }
         .control-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #1b4d3e; }
         .control-group input, .control-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
 
@@ -51,6 +51,21 @@
 
         <div class="controls">
             <div class="control-group">
+                <label>Select Class:</label>
+                <select id="classSelect" onchange="loadStudents()">
+                    <option value="XA">Class X-A</option>
+                    <option value="XB">Class X-B</option>
+                    <option value="XC">Class X-C</option>
+                    <option value="XD">Class X-D</option>
+                    <option value="XE">Class X-E</option>
+                    <option value="IXA">Class IX-A</option>
+                    <option value="IXB">Class IX-B</option>
+                    <option value="IXC">Class IX-C</option>
+                    <option value="IXD">Class IX-D</option>
+                    <option value="IXE">Class IX-E</option>
+                </select>
+            </div>
+            <div class="control-group">
                 <label>Report Type:</label>
                 <select id="reportType">
                     <option value="Daily">Daily Report</option>
@@ -67,14 +82,14 @@
         <div class="summary-card">
             <div class="summary-item">
                 <h4>Total Students</h4>
-                <p id="totalCount">3</p>
+                <p id="totalCount">0</p>
             </div>
             <div class="summary-item">
                 <h4>Present</h4>
-                <p id="presentCount" style="color: green;">3</p>
+                <p id="presentCount" style="color: green;">0</p>
             </div>
             <div class="summary-item">
-                <h4>Absent</h4>
+                <h4>Absent / Leave</h4>
                 <p id="absentCount" style="color: red;">0</p>
             </div>
         </div>
@@ -87,40 +102,8 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>01</td>
-                    <td>Ahmad Ali</td>
-                    <td>
-                        <select class="status-select" onchange="updateSummary()">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                            <option value="Leave">Leave</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>02</td>
-                    <td>Muhammad Umer</td>
-                    <td>
-                        <select class="status-select" onchange="updateSummary()">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                            <option value="Leave">Leave</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>03</td>
-                    <td>Hassan Raza</td>
-                    <td>
-                        <select class="status-select" onchange="updateSummary()">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                            <option value="Leave">Leave</option>
-                        </select>
-                    </td>
-                </tr>
+            <tbody id="studentTableBody">
+                <!-- Students will load dynamically -->
             </tbody>
         </table>
 
@@ -131,8 +114,64 @@
     </div>
 
     <script>
+        const studentsData = {
+            "XA": [
+                {roll: "10001", name: "Amina Bibi"}, {roll: "10002", name: "Amna Jameel"}, {roll: "10003", name: "Anum Khan"}, {roll: "10004", name: "Ayesha Faheem"}, {roll: "10005", name: "Bisma Rehman"}, {roll: "10006", name: "Dua Muhammad"}, {roll: "10007", name: "Erij Nadeem"}, {roll: "10008", name: "Eshal Waseem"}, {roll: "10009", name: "Fatima Ahmed"}, {roll: "10010", name: "Habiba Imran"}, {roll: "10011", name: "Humaima Asghar"}, {roll: "10012", name: "Jisra"}, {roll: "10013", name: "Mahnoor Tasleem"}, {roll: "10014", name: "Manahil Malik"}, {roll: "10015", name: "Manahil Sarfraz"}, {roll: "10016", name: "Minahil Shafique"}, {roll: "10017", name: "Musfira Asad"}, {roll: "10018", name: "Qurrat Ul Ain Hafeez"}, {roll: "10019", name: "Rimsha Rani"}, {roll: "10020", name: "Aroush Kamran"}, {roll: "10021", name: "Shanza Malik"}, {roll: "10022", name: "Syeda Mutiba Alvi"}, {roll: "10023", name: "Summaiya"}, {roll: "10024", name: "Umm E Abeeha Noushad"}, {roll: "10025", name: "Umm E Abiha Mehboob"}, {roll: "10026", name: "Zainab Mustaq"}
+            ],
+            "XB": [
+                {roll: "10027", name: "Aaisha Sardar"}, {roll: "10028", name: "Amna Noor"}, {roll: "10029", name: "Ayesha Aslam"}, {roll: "10030", name: "Bushra Ali"}, {roll: "10031", name: "Kainat Kamal Mustafa"}, {roll: "10032", name: "Maryam Khaliq"}, {roll: "10033", name: "Muskan Zahra"}, {roll: "10034", name: "Okasha Rashid"}, {roll: "10035", name: "Sughra Rahim"}, {roll: "10036", name: "Ifrah Jehangir"}, {roll: "10037", name: "Roha Shaukat"}, {roll: "10038", name: "Aimen Akmal"}, {roll: "10039", name: "Anabia Imran"}, {roll: "10040", name: "Atiba Muhammad Akram"}, {roll: "10041", name: "Dua Fatima"}, {roll: "10042", name: "Fatima Ramzan"}, {roll: "10043", name: "Fizza Fatima"}, {roll: "10044", name: "Faiqa Eman"}, {roll: "10045", name: "Kalsoom Maroof"}, {roll: "10046", name: "Laveeza Majid"}, {roll: "10047", name: "Manahil Mushtaq"}, {roll: "10048", name: "Manal Fatima"}, {roll: "10049", name: "Palwashy khan"}, {roll: "10050", name: "Romaisa Hijab"}, {roll: "10051", name: "Roman Yar Khan"}, {roll: "10052", name: "Tooba Tariq"}, {roll: "10053", name: "Umaima Zahra"}, {roll: "10054", name: "Umaima Wahab"}
+            ],
+            "XC": [
+                {roll: "10055", name: "Aayan Ullah"}, {roll: "10056", name: "Abbas Ali"}, {roll: "10057", name: "Abdul Ahad"}, {roll: "10058", name: "Abdul Hannan"}, {roll: "10059", name: "Abdul rehman"}, {roll: "10060", name: "Abdullah Faheem"}, {roll: "10061", name: "Abrash Ayub Soomro"}, {roll: "10062", name: "Ali Bakht"}, {roll: "10063", name: "Azan Wasi"}, {roll: "10064", name: "Fayyaz Uddin"}, {roll: "10065", name: "Hafiz Abdul Hadi"}, {roll: "10066", name: "Hassan Raza"}, {roll: "10067", name: "Huzaifa Qasim"}, {roll: "10068", name: "Ibrahim Rizwan"}, {roll: "10069", name: "M. Hassan Raza Khan"}, {roll: "10070", name: "M. Ibrahim"}, {roll: "10071", name: "Mohammad Aaryaan Sohail"}, {roll: "10072", name: "Muhammad Adeel Mehmood"}, {roll: "10073", name: "Muhammad Ahsan Iftikhar"}, {roll: "10074", name: "Muhammad Rehan"}, {roll: "10075", name: "Muhammad Usman"}, {roll: "10076", name: "Muhammad Umar"}, {roll: "10077", name: "Muhammad Zeeshan"}, {roll: "10078", name: "Saifullah Kamran"}, {roll: "10079", name: "Sajawal Rafique"}, {roll: "10080", name: "Umair Raza"}, {roll: "10135", name: "Faran Naeem"}
+            ],
+            "XD": [
+                {roll: "10081", name: "Abdul Hadi"}, {roll: "10082", name: "Abdul Moiz Mansoor"}, {roll: "10083", name: "Abdullah Obaid Zakeria"}, {roll: "10084", name: "Habban"}, {roll: "10085", name: "Hafiz Ahtisham"}, {roll: "10086", name: "Haider Shehzad"}, {roll: "10087", name: "M.Abdullah Khan"}, {roll: "10088", name: "Mohammad Hammad"}, {roll: "10089", name: "Mohammad Husnain"}, {roll: "10090", name: "Muhammad Abraiz Tahir"}, {roll: "10091", name: "Muhammad Ali Amir"}, {roll: "10092", name: "Muhammad Ammar"}, {roll: "10093", name: "Muhammad Asim Latif"}, {roll: "10094", name: "Muhammad Ayan Amjad"}, {roll: "10095", name: "Muhammad Ayan Zahid"}, {roll: "10096", name: "Muhammad Ayaz"}, {roll: "10097", name: "Muhammad Azan Zahid"}, {roll: "10098", name: "Muhammad Hamza Nawaz"}, {roll: "10099", name: "Muhammad Haseeb"}, {roll: "10100", name: "Muhammad Hashir Khan"}, {roll: "10101", name: "Muhammad Huzaifa Zafar Iqbal"}, {roll: "10102", name: "Muhammad Raza"}, {roll: "10103", name: "Muhammad Reyan Qamar"}, {roll: "10104", name: "Muhammad Saad Noor"}, {roll: "10105", name: "Muhammad Shoaib"}, {roll: "10106", name: "Muhammad Usman Alam"}, {roll: "10107", name: "Syed Ayan Haider"}, {roll: "10108", name: "Tayyab Bin Aamir"}, {roll: "10109", name: "Zeeshan Tariq"}, {roll: "10133", name: "Abu Zar"}
+            ],
+            "XE": [
+                {roll: "10110", name: "Aaliyan Ahmed Khattak"}, {roll: "10111", name: "Abdullah"}, {roll: "10112", name: "Ayan Tariq"}, {roll: "10113", name: "Fazal Kashif"}, {roll: "10114", name: "Haziq Ahmed"}, {roll: "10115", name: "Muhammad Hassan Ajmal"}, {roll: "10116", name: "Muhammad Hunain"}, {roll: "10117", name: "Muhammad Muazzam"}, {roll: "10118", name: "Muhammad Mursil"}, {roll: "10119", name: "Muhammad Ozair Shah"}, {roll: "10120", name: "Muhammad Rayyan Chohan"}, {roll: "10121", name: "Muhammad Yousuf Shaikh"}, {roll: "10122", name: "Nazeer Muhammad Khan"}, {roll: "10123", name: "Obaid Ullah Khan"}, {roll: "10124", name: "Rana Khizar"}, {roll: "10125", name: "Saeed Ur Rehman Ansari"}, {roll: "10126", name: "Sheikh Abdul Wasay"}, {roll: "10127", name: "Subhan Ahmed"}, {roll: "10128", name: "Subhan Sheraz"}, {roll: "10129", name: "Syed Arish Abbas Kazmi"}, {roll: "10130", name: "Syed Hamza Hassan"}, {roll: "10131", name: "Tameem Sarwar"}, {roll: "10132", name: "Wajh Ur Rehman"}
+            ],
+            "IXA": [
+                {roll: "90001", name: "Amna Bibi"}, {roll: "90002", name: "Amna Shahid"}, {roll: "90003", name: "Amna Zeenat"}, {roll: "90004", name: "Anayah Batool"}, {roll: "90005", name: "Aneesa Zehra"}, {roll: "90006", name: "Ashnaiba Alaina"}, {roll: "90007", name: "Ayesha Muhammad Arif"}, {roll: "90008", name: "Aziza Didar"}, {roll: "90009", name: "Fatima Asghar"}, {roll: "90010", name: "Hateem Aimen"}, {roll: "90011", name: "Hoorain"}, {roll: "90012", name: "Humna Shah"}, {roll: "90013", name: "Izma Akhter"}, {roll: "90014", name: "Kashaf Akram"}, {roll: "90015", name: "Laina"}, {roll: "90016", name: "Munaima Mumtaz"}, {roll: "90017", name: "Muqaddas Shahbaz"}, {roll: "90018", name: "Nusaybah Tahir"}, {roll: "90019", name: "Sumaira Abdul Basit"}, {roll: "90020", name: "Syeda Hiba Mansoor"}, {roll: "90021", name: "Taneer Zahra Kazmi"}, {roll: "90022", name: "Umaima Shahid"}, {roll: "90023", name: "Urwa Arif"}, {roll: "90024", name: "Wania"}, {roll: "90025", name: "Zubaida Khan"}, {roll: "90026", name: "Zarish Wajid"}, {roll: "90027", name: "Syeda Anzalna Haider"}, {roll: "90143", name: "Sadia Kanwal"}
+            ],
+            "IXB": [
+                {roll: "90028", name: "Abeera Adnan"}, {roll: "90029", name: "Alishba Khan"}, {roll: "90030", name: "Alishbah Mir"}, {roll: "90031", name: "Amrah Azhar"}, {roll: "90032", name: "Anum Adil"}, {roll: "90033", name: "Areeba Naeem"}, {roll: "90034", name: "Ayesha Majid"}, {roll: "90035", name: "Ayesha Shahid"}, {roll: "90036", name: "Ayesha Tanveer"}, {roll: "90037", name: "Dua Batool"}, {roll: "90038", name: "Eman Shabraiz"}, {roll: "90039", name: "Insha Ali"}, {roll: "90040", name: "Inshera Manzoor"}, {roll: "90041", name: "Inshira Farhan"}, {roll: "90042", name: "Khadija Sardar"}, {roll: "90043", name: "Maryam Naeem"}, {roll: "90044", name: "Romesa Sultan"}, {roll: "90045", name: "Ruhma"}, {roll: "90046", name: "Sakina Ashfaq"}, {roll: "90047", name: "Samia Yaseen"}, {roll: "90048", name: "Simrah Nasir"}, {roll: "90049", name: "Sukaina Murtaza Rind"}, {roll: "90050", name: "Syeda Fizza Batool"}, {roll: "90051", name: "Umaima Tanveer"}, {roll: "90052", name: "Umm E Hani"}, {roll: "90053", name: "Urwa Mushtaq"}, {roll: "90054", name: "Uswah Khan"}, {roll: "90055", name: "Zainab Gul"}
+            ],
+            "IXC": [
+                {roll: "90056", name: "Abdul Wahab"}, {roll: "90057", name: "Ali Haider"}, {roll: "90058", name: "Arsalan Ahmed"}, {roll: "90059", name: "Asad Asif Azeem"}, {roll: "90060", name: "Asad Nawaz"}, {roll: "90061", name: "Asad Zeeshan"}, {roll: "90062", name: "Ch Shabi Haider"}, {roll: "90063", name: "Hafiz Ahmed Raza"}, {roll: "90064", name: "Imran Ali"}, {roll: "90065", name: "Muhammad Ahmad"}, {roll: "90066", name: "Muhammad Fuzail"}, {roll: "90067", name: "Muhammad Huzaifa"}, {roll: "90068", name: "Muhammad Khashan Shafique"}, {roll: "90069", name: "Mujtaba Khan Muhammad"}, {roll: "90070", name: "Muhammad Muneeb"}, {roll: "90071", name: "Abdul Rehman"}, {roll: "90072", name: "Muhammad Musawir"}, {roll: "90073", name: "Muhammad Muttahir Musaddiq"}, {roll: "90074", name: "Muhammad Qasid Amazai"}, {roll: "90075", name: "Muhammad Taishan Nawaz"}, {roll: "90076", name: "Saad Ashfaq"}, {roll: "90077", name: "Sana Ullah"}, {roll: "90078", name: "Syed Muhammad Amaan Zaidi"}, {roll: "90079", name: "Syed Muhammad Ibsham"}, {roll: "90080", name: "Uzaam Shaheer"}, {roll: "90081", name: "Wasay Khan"}, {roll: "90082", name: "Youshay Afnan"}, {roll: "90083", name: "Mehboob Ali"}, {roll: "90143", name: "Ali Sher"}
+            ],
+            "IXD": [
+                {roll: "90084", name: "Abdul Basit"}, {roll: "90085", name: "Aryan Khan"}, {roll: "90086", name: "Abdullah Sajad"}, {roll: "90087", name: "Abu Hurerah"}, {roll: "90088", name: "Ahmad Kamran"}, {roll: "90089", name: "Anfal Bhatti"}, {roll: "90090", name: "Ashir Hanif Khan"}, {roll: "90091", name: "Baqir Raza"}, {roll: "90092", name: "Hafiz Yousha Ahmed"}, {roll: "90093", name: "Muhammad Abdullah"}, {roll: "90094", name: "Muhammad Abdullah Aqeel"}, {roll: "90095", name: "Muhammad Abuzar"}, {roll: "90096", name: "Muhammad Awais"}, {roll: "90097", name: "Muhammad Ayan Shakeel"}, {roll: "90098", name: "Muhammad Ayan Zafar"}, {roll: "90099", name: "Muhammad Ayyan Shahid"}, {roll: "90100", name: "Muhammad Haris Malik"}, {roll: "90101", name: "Muhammad Jawad"}, {roll: "90102", name: "Muhammad Sahil"}, {roll: "90103", name: "Muhammad Taha Sajid"}, {roll: "90104", name: "Muhammad Umar"}, {roll: "90105", name: "Mustafa Aijaz"}, {roll: "90106", name: "Omar Abdullah"}, {roll: "90107", name: "Osman Abdul Ghani Bin Safi"}, {roll: "90108", name: "Ghulam Mustafa"}, {roll: "90109", name: "Saad Ahmed"}, {roll: "90110", name: "Shafaat Hussain"}, {roll: "90111", name: "Shameer Ahmed Khan"}, {roll: "90112", name: "Mujeeb Amjad"}, {roll: "90113", name: "Zamin Abbass"}
+            ],
+            "IXE": [
+                {roll: "90114", name: "Abdul Hadi Memon"}, {roll: "90115", name: "Abdul Manan"}, {roll: "90116", name: "Abdullah Gondal"}, {roll: "90117", name: "Ch Muhammad Haider Amin"}, {roll: "90118", name: "Dayan Hussain"}, {roll: "90119", name: "Ghulam Mustafa"}, {roll: "90120", name: "Humza Asif"}, {roll: "90121", name: "Husain Buksh"}, {roll: "90122", name: "Mir Hazar Khan"}, {roll: "90123", name: "Mohammad Rafay"}, {roll: "90124", name: "Mohammad Saad"}, {roll: "90125", name: "Muhammad Hanzala"}, {roll: "90126", name: "Muhammad Affan"}, {roll: "90127", name: "Muhammad Ashar"}, {roll: "90128", name: "Muhammad Hammad"}, {roll: "90129", name: "Muhammad Haroon"}, {roll: "90130", name: "Muhammad Hassaan Jamil"}, {roll: "90131", name: "Muhammad Hunain Abbasi"}, {roll: "90132", name: "Muhammad Maaz Ali"}, {roll: "90133", name: "Muhammad Rayyan"}, {roll: "90134", name: "Muhammad Shaheer Musaddiq"}, {roll: "90135", name: "Muhammad Shehriyar Abbas"}, {roll: "90136", name: "Muhammad Taha Murtaza"}, {roll: "90137", name: "Muntazir Ali Mehdi"}, {roll: "90138", name: "Rayyan Ahmed"}, {roll: "90139", name: "Rayyan Mohsin"}, {roll: "90140", name: "Shaikh Abdul Wahab"}, {roll: "90141", name: "Syed Haider Abbas"}, {roll: "90142", name: "Ubaidullah Tahir Mehmood"}
+            ]
+        };
+
         // Set today's date automatically
         document.getElementById('attendanceDate').valueAsDate = new Date();
+
+        function loadStudents() {
+            let classKey = document.getElementById('classSelect').value;
+            let list = studentsData[classKey] || [];
+            let tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = "";
+
+            list.forEach((student, index) => {
+                let row = `<tr>
+                    <td>${student.roll}</td>
+                    <td>${student.name}</td>
+                    <td>
+                        <select class="status-select" onchange="updateSummary()">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Leave">Leave</option>
+                        </select>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            updateSummary();
+        }
 
         function updateSummary() {
             let selects = document.querySelectorAll('.status-select');
@@ -151,6 +190,7 @@
         }
 
         function shareWhatsApp() {
+            let className = document.getElementById('classSelect').options[document.getElementById('classSelect').selectedIndex].text;
             let date = document.getElementById('attendanceDate').value;
             let type = document.getElementById('reportType').value;
             let total = document.getElementById('totalCount').innerText;
@@ -158,6 +198,7 @@
             let absent = document.getElementById('absentCount').innerText;
 
             let report = `📋 *APS&C E-Attendance Report* 📋\n`;
+            report += `🏫 *Class:* ${className}\n`;
             report += `📌 *Type:* ${type}\n`;
             report += `📅 *Date:* ${date}\n\n`;
             report += `👥 *Total Students:* ${total}\n`;
@@ -173,6 +214,9 @@
         function downloadPDF() {
             window.print();
         }
+
+        // Initial load
+        loadStudents();
     </script>
 </body>
 </html>
