@@ -5,25 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APS&C E-Attendance Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 750px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 15px; color: #333; }
+        .container { max-width: 750px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .header { text-align: center; border-bottom: 2px solid #1b4d3e; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h2 { color: #1b4d3e; margin: 0 0 5px 0; font-size: 22px; }
-        .header p { margin: 3px 0; font-size: 14px; color: #555; }
+        .header h2 { color: #1b4d3e; margin: 0 0 5px 0; font-size: 20px; }
+        .header p { margin: 3px 0; font-size: 13px; color: #555; }
         
-        .controls { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .control-group { flex: 1; min-width: 150px; }
+        .controls { margin-bottom: 20px; }
+        .control-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .control-group { flex: 1; min-width: 200px; }
         .control-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #1b4d3e; }
         .control-group input, .control-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 14px; }
-        th { background-color: #1b4d3e; color: white; }
-        td select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
+        /* Quick Touch Class Buttons */
+        .class-buttons-container { margin-bottom: 20px; }
+        .class-buttons-container label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #1b4d3e; }
+        .class-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .class-btn { padding: 10px 15px; background: #eef2f3; border: 1px solid #1b4d3e; color: #1b4d3e; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .class-btn.active { background: #1b4d3e; color: white; }
 
-        .summary-card { background: #eef2f3; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
-        .summary-item h4 { margin: 0 0 5px 0; color: #1b4d3e; font-size: 14px; }
-        .summary-item p { margin: 0; font-size: 18px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 14px; }
+        th { background-color: #1b4d3e; color: white; }
+        td select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
+
+        .summary-card { background: #eef2f3; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
+        .summary-item h4 { margin: 0 0 5px 0; color: #1b4d3e; font-size: 13px; }
+        .summary-item p { margin: 0; font-size: 16px; font-weight: bold; }
 
         .btn-container { display: flex; gap: 10px; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; color: white; text-align: center; }
@@ -34,7 +42,7 @@
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; max-width: 100%; }
-            .btn-container, .controls { display: none; }
+            .btn-container, .class-buttons-container, .control-row { display: none; }
             td select { border: none; appearance: none; background: transparent; font-weight: bold; }
         }
     </style>
@@ -46,36 +54,31 @@
             <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
             <p>Faisal, Karachi - Senior Section</p>
             <p><b>Subject:</b> Tarjuma-tul-Quran / Islamiyat | <b>Teacher:</b> Syed Muhammad Umer Fareed</p>
-            <p style="margin-top: 8px; font-size: 16px; color: #1b4d3e; font-weight: bold;">E-ATTENDANCE PORTAL</p>
+            <p style="margin-top: 6px; font-size: 15px; color: #1b4d3e; font-weight: bold;">E-ATTENDANCE PORTAL</p>
         </div>
 
         <div class="controls">
-            <div class="control-group">
-                <label>Select Class:</label>
-                <select id="classSelect" onchange="loadStudents()">
-                    <option value="XA">Class X-A</option>
-                    <option value="XB">Class X-B</option>
-                    <option value="XC">Class X-C</option>
-                    <option value="XD">Class X-D</option>
-                    <option value="XE">Class X-E</option>
-                    <option value="IXA">Class IX-A</option>
-                    <option value="IXB">Class IX-B</option>
-                    <option value="IXC">Class IX-C</option>
-                    <option value="IXD">Class IX-D</option>
-                    <option value="IXE">Class IX-E</option>
-                </select>
+            <div class="control-row">
+                <div class="control-group">
+                    <label>Report Type:</label>
+                    <select id="reportType">
+                        <option value="Daily">Daily Report</option>
+                        <option value="Weekly">Weekly Report</option>
+                        <option value="Monthly">Monthly Report</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Select Date:</label>
+                    <input type="date" id="attendanceDate" onchange="updateDaySchedule()">
+                </div>
             </div>
-            <div class="control-group">
-                <label>Report Type:</label>
-                <select id="reportType">
-                    <option value="Daily">Daily Report</option>
-                    <option value="Weekly">Weekly Report</option>
-                    <option value="Monthly">Monthly Report</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Select Date:</label>
-                <input type="date" id="attendanceDate">
+        </div>
+
+        <!-- Touch Buttons for Today's Classes -->
+        <div class="class-buttons-container">
+            <label>Tap Your Class for Today:</label>
+            <div id="classButtonsList" class="class-btns">
+                <!-- Buttons will appear here dynamically -->
             </div>
         </div>
 
@@ -103,7 +106,7 @@
                 </tr>
             </thead>
             <tbody id="studentTableBody">
-                <!-- Students will load dynamically -->
+                <!-- Students loaded dynamically -->
             </tbody>
         </table>
 
@@ -147,16 +150,63 @@
             ]
         };
 
+        // Timetable mapping based on Teacher Umar's schedule
+        const timetable = {
+            1: [ {id: "XD", name: "Class X-D"}, {id: "IXD", name: "Class IX-D"}, {id: "XE", name: "Class X-E"}, {id: "IXB", name: "Class IX-B"}, {id: "IXE", name: "Class IX-E"} ], // Monday
+            2: [ {id: "XA", name: "Class X-A"}, {id: "XE", name: "Class X-E"}, {id: "IXB", name: "Class IX-B"}, {id: "IXE", name: "Class IX-E"} ], // Tuesday
+            3: [ {id: "IXD", name: "Class IX-D"}, {id: "XD", name: "Class X-D"}, {id: "IXC", name: "Class IX-C"}, {id: "XC", name: "Class X-C"} ], // Wednesday
+            4: [ {id: "XB", name: "Class X-B"}, {id: "XA", name: "Class X-A"}, {id: "IXA", name: "Class IX-A"}, {id: "IXC", name: "Class IX-C"} ], // Thursday
+            5: [ {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"}, {id: "IXA", name: "Class IX-A"} ] // Friday
+        };
+
+        let activeClassId = "";
+
         // Set today's date automatically
         document.getElementById('attendanceDate').valueAsDate = new Date();
+        updateDaySchedule();
 
-        function loadStudents() {
-            let classKey = document.getElementById('classSelect').value;
+        function updateDaySchedule() {
+            let dateVal = document.getElementById('attendanceDate').value;
+            let dateObj = dateVal ? new Date(dateVal) : new Date();
+            let dayOfWeek = dateObj.getDay(); // 0: Sun, 1: Mon ... 5: Fri, 6: Sat
+
+            let scheduled = timetable[dayOfWeek];
+            if (!scheduled) {
+                scheduled = [
+                    {id: "XA", name: "Class X-A"}, {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"}, {id: "XD", name: "Class X-D"}, {id: "XE", name: "Class X-E"},
+                    {id: "IXA", name: "Class IX-A"}, {id: "IXB", name: "Class IX-B"}, {id: "IXC", name: "Class IX-C"}, {id: "IXD", name: "Class IX-D"}, {id: "IXE", name: "Class IX-E"}
+                ];
+            }
+
+            let container = document.getElementById('classButtonsList');
+            container.innerHTML = "";
+
+            scheduled.forEach((cls, index) => {
+                let btn = document.createElement('button');
+                btn.type = "button";
+                btn.className = "class-btn" + (index === 0 ? " active" : "");
+                btn.innerText = cls.name;
+                btn.onclick = function() {
+                    document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeClassId = cls.id;
+                    loadStudents(cls.id);
+                };
+                container.appendChild(btn);
+            });
+
+            if (scheduled.length > 0) {
+                activeClassId = scheduled[0].id;
+                loadStudents(activeClassId);
+            }
+        }
+
+        function loadStudents(classKey) {
             let list = studentsData[classKey] || [];
             let tbody = document.getElementById('studentTableBody');
             tbody.innerHTML = "";
 
-            list.forEach((student, index) => {
+            list.forEach((student) => {
                 let row = `<tr>
                     <td>${student.roll}</td>
                     <td>${student.name}</td>
@@ -190,7 +240,8 @@
         }
 
         function shareWhatsApp() {
-            let className = document.getElementById('classSelect').options[document.getElementById('classSelect').selectedIndex].text;
+            let activeBtn = document.querySelector('.class-btn.active');
+            let className = activeBtn ? activeBtn.innerText : "";
             let date = document.getElementById('attendanceDate').value;
             let type = document.getElementById('reportType').value;
             let total = document.getElementById('totalCount').innerText;
@@ -214,9 +265,6 @@
         function downloadPDF() {
             window.print();
         }
-
-        // Initial load
-        loadStudents();
     </script>
 </body>
 </html>
