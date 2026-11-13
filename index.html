@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>APS&C E-Attendance | Syed Muhammad Umer Fareed</title>
+    <style>
+        :root { --primary: #006400; --gold: #b8860b; --present: #28a745; --absent: #dc3545; --bunk: #fd7e14; --late: #ffc107; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        
+        /* Official Header */
+        .header { background: var(--primary); color: white; text-align: center; padding: 20px 10px; border-bottom: 5px solid var(--gold); }
+        .header img { width: 90px; height: auto; margin-bottom: 10px; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3)); }
+        .header h1 { margin: 0; font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+        .header h3 { margin: 5px 0 10px; font-size: 14px; font-weight: normal; color: #e0e0e0; }
+        .header .subject-info { background: rgba(255,255,255,0.15); padding: 8px 15px; border-radius: 5px; font-size: 15px; display: inline-block; margin-top: 5px; border: 1px solid rgba(255,255,255,0.2); }
+        
+        .container { padding: 15px; max-width: 700px; margin: auto; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        
+        /* Form & Buttons */
+        input[type="password"], select, input[type="month"], input[type="date"] { width: 100%; padding: 12px; margin: 10px 0; font-size: 16px; border: 2px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        input[type="password"] { font-size: 20px; text-align: center; letter-spacing: 5px; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        
+        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; transition: 0.3s; text-transform: uppercase; }
+        button:hover { background: #004d00; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .btn-gold { background: var(--gold); }
+        .btn-gold:hover { background: #996500; }
+        
+        /* Dashboard Classes */
+        .class-btn { background: white; color: var(--primary); border: 2px solid var(--primary); font-size: 16px; padding: 12px; }
+        .class-btn:hover { background: var(--primary); color: white; }
+        .section-title { text-align: center; color: var(--primary); border-bottom: 2px solid var(--gold); padding-bottom: 5px; margin-top: 20px; font-size: 18px; text-transform: uppercase; }
+        
+        /* Student Rows */
+        .student-row { background: white; padding: 15px; margin-bottom: 12px; border-radius: 8px; border-left: 5px solid var(--primary); box-shadow: 0 3px 6px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+        .student-info { font-weight: bold; font-size: 16px; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; color: #222; }
+        .options { display: flex; justify-content: space-between; gap: 5px; }
+        .options label { flex: 1; text-align: center; border: 1px solid #ddd; border-radius: 5px; background: #f8f9fa; font-size: 13px; cursor: pointer; transition: 0.2s; overflow: hidden; }
+        .options input[type="radio"] { display: none; }
+        .options span { display: block; padding: 10px 0; color: #555; font-weight: bold; }
+        
+        .options input[type="radio"]:checked + span { color: white; }
+        .opt-p:checked + span { background: var(--present); border-color: var(--present); }
+        .opt-a:checked + span { background: var(--absent); border-color: var(--absent); }
+        .opt-b:checked + span { background: var(--bunk); border-color: var(--bunk); }
+        .opt-l:checked + span { background: var(--late); border-color: var(--late); color: black !important; } 
+        
+        /* Top Bar */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 12px 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .back-btn { width: auto; padding: 8px 20px; background: #6c757d; font-size: 13px; margin: 0; }
+        .class-heading { color: var(--primary); font-size: 18px; font-weight: bold; margin: 0; }
+        .date-text { font-size: 13px; font-weight: bold; color: #666; }
+        
+        /* Table for Records */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; font-size: 14px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background: var(--primary); color: white; }
+        
+        /* Footer */
+        .footer { text-align: center; padding: 20px; background: #e9ecef; color: #555; font-size: 12px; margin-top: 30px; border-top: 1px solid #ddd; line-height: 1.6; }
+        .footer strong { color: var(--primary); font-size: 13px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="https://upload.wikimedia.org/wikipedia/en/2/23/Army_Public_Schools_and_Colleges_System_logo.png" alt="APS Logo">
+        <h1>ARMY PUBLIC SCHOOL & COLLEGE</h1>
+        <h3>FAISAL, KARACHI — SENIOR SECTION</h3>
+        <div class="subject-info">
+            <strong>Subject:</strong> Tarjuma-tul-Quran &nbsp;|&nbsp; <strong>Teacher:</strong> Syed Muhammad Umer Fareed
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen active">
+            <h2 class="section-title">Secure Access</h2>
+            <p style="text-align: center; color: #666; font-size: 14px;">Please enter your official PIN to access the portal</p>
+            <input type="password" id="pinCode" placeholder="Enter PIN (7860)" pattern="[0-9]*" inputmode="numeric">
+            <button onclick="login()">Login to System</button>
+            <p id="loginError" style="color: #dc3545; text-align: center; display: none; font-weight: bold; font-size: 14px; margin-top: 15px;">Access Denied! Invalid PIN Code.</p>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboardScreen" class="screen">
+            <button class="btn-gold" onclick="openRecordsScreen()" style="margin-top: 10px; padding: 20px; font-size: 18px;">📋 View & Download Records</button>
+            
+            <h2 class="section-title">Today's Schedule - <span id="dayName"></span></h2>
+            <div id="todayClasses" style="margin-bottom: 30px;"></div>
+            
+            <h2 class="section-title" style="color: #666; border-color: #ccc;">All Classes (Manual Override)</h2>
+            <div id="allClasses" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between;"></div>
+        </div>
+
+        <!-- Attendance Screen -->
+        <div id="attendanceScreen" class="screen">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showDashboard()">Back</button>
+                <h3 class="class-heading" id="currentClassTitle"></h3>
+                <span class="date-text" id="currentDate"></span>
+            </div>
+            <div id="studentsList"></div>
+            <button onclick="saveAttendance()" style="background: var(--primary); margin-top: 20px; font-size: 18px; padding: 18px;">Save Attendance Record</button>
+        </div>
+
+        <!-- Records Screen -->
+        <div id="recordsScreen" class="screen">
+            <div class="top-bar">
+                <button class="back-btn" onclick="showDashboard()">Back</button>
+                <h3 class="class-heading">Attendance Reports</h3>
+            </div>
+            
+            <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                <label style="font-weight: bold;">Select Class:</label>
+                <select id="recordClass">
+                    <option value="XA">XA</option><option value="XB">XB</option><option value="XC">XC</option><option value="XD">XD</option><option value="XE">XE</option>
+                    <option value="IXA">IXA</option><option value="IXB">IXB</option><option value="IXC">IXC</option><option value="IXD">IXD</option><option value="IXE">IXE</option>
+                </select>
+
+                <label style="font-weight: bold; margin-top: 10px; display: block;">Report Type:</label>
+                <select id="reportType" onchange="toggleDateInput()">
+                    <option value="daily">Daily Report (Specific Date)</option>
+                    <option value="monthly">Monthly Report (Summary)</option>
+                </select>
+
+                <div id="dailyInputGroup" style="margin-top: 10px;">
+                    <label style="font-weight: bold;">Select Date:</label>
+                    <input type="date" id="recordDate">
+                </div>
+                
+                <div id="monthlyInputGroup" style="margin-top: 10px; display: none;">
+                    <label style="font-weight: bold;">Select Month:</label>
+                    <input type="month" id="recordMonth">
+                </div>
+
+                <button onclick="generateReport()" style="margin-top: 15px;">Generate Report</button>
+            </div>
+
+            <div id="reportContainer" style="display: none; margin-top: 20px; overflow-x: auto;">
+                <h3 id="reportTitle" style="text-align: center; color: var(--primary);"></h3>
+                <table id="reportTable">
+                    <thead>
+                        <tr id="tableHeader">
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+                <button class="btn-gold" onclick="downloadCSV()" style="margin-top: 20px;">⬇️ Download as Excel (CSV)</button>
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="footer">
+        <strong>Official E-Attendance Portal</strong><br>
+        Developed & Maintained by: Syed Muhammad Umer Fareed<br>
+        © Army Public School & College - Faisal, Karachi
+    </div>
+
+    <script>
+        const timetable = { 1: ["XD", "IXD", "XE", "IXB", "IXE"], 2: ["XA", "XE", "IXB", "IXE"], 3: ["IXD", "XD", "IXC", "XC"], 4: ["XB", "XA", "IXA", "IXC"], 5: ["XB", "XC", "IXA"], 6: [], 0: [] };
+        const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        
+        const students = {
+            "XA": [{r: "10001", n: "Amina Bibi"}, {r: "10002", n: "Amna Jameel"}, {r: "10003", n: "Anum Khan"}, {r: "10004", n: "Ayesha Faheem"}, {r: "10005", n: "Bisma Rehman"}, {r: "10006", n: "Dua Muhammad"}, {r: "10007", n: "Erij Nadeem"}, {r: "10008", n: "Eshal Waseem"}, {r: "10009", n: "Fatima Ahmed"}, {r: "10010", n: "Habiba Imran"}, {r: "10011", n: "Humaima Asghar"}, {r: "10012", n: "Jisra"}, {r: "10013", n: "Mahnoor Tasleem"}, {r: "10014", n: "Manahil Malik"}, {r: "10015", n: "Manahil Sarfraz"}, {r: "10016", n: "Minahil Shafique"}, {r: "10017", n: "Musfira Asad"}, {r: "10018", n: "Qurrat Ul Ain Hafeez"}, {r: "10019", n: "Rimsha Rani"}, {r: "10020", n: "Aroush Kamran"}, {r: "10021", n: "Shanza Malik"}, {r: "10022", n: "Syeda Mutiba Alvi"}, {r: "10023", n: "Summaiya"}, {r: "10024", n: "Umm E Abeeha Noushad"}, {r: "10025", n: "Umm E Abiha Mehboob"}, {r: "10026", n: "Zainab Mustaq"}],
+            "XB": [{r: "10027", n: "Aaisha Sardar"}, {r: "10028", n: "Amna Noor"}, {r: "10029", n: "Ayesha Aslam"}, {r: "10030", n: "Bushra Ali"}, {r: "10031", n: "Kainat Kamal Mustafa"}, {r: "10032", n: "Maryam Khaliq"}, {r: "10033", n: "Muskan Zahra"}, {r: "10034", n: "Okasha Rashid"}, {r: "10035", n: "Sughra Rahim"}, {r: "10036", n: "Ifrah Jehangir"}, {r: "10037", n: "Roha Shaukat"}, {r: "10038", n: "Aimen Akmal"}, {r: "10039", n: "Anabia Imran"}, {r: "10040", n: "Atiba Muhammad Akram"}, {r: "10041", n: "Dua Fatima"}, {r: "10042", n: "Fatima Ramzan"}, {r: "10043", n: "Fizza Fatima"}, {r: "10044", n: "Faiqa Eman"}, {r: "10045", n: "Kalsoom Maroof"}, {r: "10046", n: "Laveeza Majid"}, {r: "10047", n: "Manahil Mushtaq"}, {r: "10048", n: "Manal Fatima"}, {r: "10049", n: "Palwashy khan"}, {r: "10050", n: "Romaisa Hijab"}, {r: "10051", n: "Roman Yar Khan"}, {r: "10052", n: "Tooba Tariq"}, {r: "10053", n: "Umaima Zahra"}, {r: "10054", n: "Umaima Wahab"}],
+            "XC": [{r: "10055", n: "Aayan Ullah"}, {r: "10056", n: "Abbas Ali"}, {r: "10057", n: "Abdul Ahad"}, {r: "10058", n: "Abdul Hannan"}, {r: "10059", n: "Abdul rehman"}, {r: "10060", n: "Abdullah Faheem"}, {r: "10061", n: "Abrash Ayub Soomro"}, {r: "10062", n: "Ali Bakht"}, {r: "10063", n: "Azan Wasi"}, {r: "10064", n: "Fayyaz Uddin"}, {r: "10065", n: "Hafiz Abdul Hadi"}, {r: "10066", n: "Hassan Raza"}, {r: "10067", n: "Huzaifa Qasim"}, {r: "10068", n: "Ibrahim Rizwan"}, {r: "10069", n: "M. Hassan Raza Khan"}, {r: "10070", n: "M. Ibrahim"}, {r: "10071", n: "Mohammad Aaryaan Sohail"}, {r: "10072", n: "Muhammad Adeel Mehmood"}, {r: "10073", n: "Muhammad Ahsan Iftikhar"}, {r: "10074", n: "Muhammad Rehan"}, {r: "10075", n: "Muhammad Usman"}, {r: "10076", n: "Muhammad Umar"}, {r: "10077", n: "Muhammad Zeeshan"}, {r: "10078", n: "Saifullah Kamran"}, {r: "10079", n: "Sajawal Rafique"}, {r: "10080", n: "Umair Raza"}, {r: "10135", n: "Faran Naeem"}],
+            "XD": [{r: "10081", n: "Abdul Hadi"}, {r: "10082", n: "Abdul Moiz Mansoor"}, {r: "10083", n: "Abdullah Obaid Zakeria"}, {r: "10084", n: "Habban"}, {r: "10085", n: "Hafiz Ahtisham"}, {r: "10086", n: "Haider Shehzad"}, {r: "10087", n: "M.Abdullah Khan"}, {r: "10088", n: "Mohammad Hammad"}, {r: "10089", n: "Mohammad Husnain"}, {r: "10090", n: "Muhammad Abraiz Tahir"}, {r: "10091", n: "Muhammad Ali Amir"}, {r: "10092", n: "Muhammad Ammar"}, {r: "10093", n: "Muhammad Asim Latif"}, {r: "10094", n: "Muhammad Ayan Amjad"}, {r: "10095", n: "Muhammad Ayan Zahid"}, {r: "10096", n: "Muhammad Ayaz"}, {r: "10097", n: "Muhammad Azan Zahid"}, {r: "10098", n: "Muhammad Hamza Nawaz"}, {r: "10099", n: "Muhammad Haseeb"}, {r: "10100", n: "Muhammad Hashir Khan"}, {r: "10101", n: "Muhammad Huzaifa Zafar Iqbal"}, {r: "10102", n: "Muhammad Raza"}, {r: "10103", n: "Muhammad Reyan Qamar"}, {r: "10104", n: "Muhammad Saad Noor"}, {r: "10105", n: "Muhammad Shoaib"}, {r: "10106", n: "Muhammad Usman Alam"}, {r: "10107", n: "Syed Ayan Haider"}, {r: "10108", n: "Tayyab Bin Aamir"}, {r: "10109", n: "Zeeshan Tariq"}, {r: "10133", n: "Abu Zar"}],
+            "XE": [{r: "10110", n: "Aaliyan Ahmed Khattak"}, {r: "10111", n: "Abdullah"}, {r: "10112", n: "Ayan Tariq"}, {r: "10113", n: "Fazal Kashif"}, {r: "10114", n: "Haziq Ahmed"}, {r: "10115", n: "Muhammad Hassan Ajmal"}, {r: "10116", n: "Muhammad Hunain"}, {r: "10117", n: "Muhammad Muazzam"}, {r: "10118", n: "Muhammad Mursil"}, {r: "10119", n: "Muhammad Ozair Shah"}, {r: "10120", n: "Muhammad Rayyan Chohan"}, {r: "10121", n: "Muhammad Yousuf Shaikh"}, {r: "10122", n: "Nazeer Muhammad Khan"}, {r: "10123", n: "Obaid Ullah Khan"}, {r: "10124", n: "Rana Khizar"}, {r: "10125", n: "Saeed Ur Rehman Ansari"}, {r: "10126", n: "Sheikh Abdul Wasay"}, {r: "10127", n: "Subhan Ahmed"}, {r: "10128", n: "Subhan Sheraz"}, {r: "10129", n: "Syed Arish Abbas Kazmi"}, {r: "10130", n: "Syed Hamza Hassan"}, {r: "10131", n: "Tameem Sarwar"}, {r: "10132", n: "Wajh Ur Rehman"}],
+            "IXA": [{r: "90001", n: "Amna Bibi"}, {r: "90002", n: "Amna Shahid"}, {r: "90003", n: "Amna Zeenat"}, {r: "90004", n: "Anayah Batool"}, {r: "90005", n: "Aneesa Zehra"}, {r: "90006", n: "Ashnaiba Alaina"}, {r: "90007", n: "Ayesha Muhammad Arif"}, {r: "90008", n: "Aziza Didar"}, {r: "90009", n: "Fatima Asghar"}, {r: "90010", n: "Hateem Aimen"}, {r: "90011", n: "Hoorain"}, {r: "90012", n: "Humna Shah"}, {r: "90013", n: "Izma Akhter"}, {r: "90014", n: "Kashaf Akram"}, {r: "90015", n: "Laina"}, {r: "90016", n: "Munaima Mumtaz"}, {r: "90017", n: "Muqaddas Shahbaz"}, {r: "90018", n: "Nusaybah Tahir"}, {r: "90019", n: "Sumaira Abdul Basit"}, {r: "90020", n: "Syeda Hiba Mansoor"}, {r: "90021", n: "Taneer Zahra Kazmi"}, {r: "90022", n: "Umaima Shahid"}, {r: "90023", n: "Urwa Arif"}, {r: "90024", n: "Wania"}, {r: "90025", n: "Zubaida Khan"}, {r: "90026", n: "Zarish Wajid"}, {r: "90027", n: "Syeda Anzalna Haider"}, {r: "90143", n: "Sadia Kanwal"}],
+            "IXB": [{r: "90028", n: "Abeera Adnan"}, {r: "90029", n: "Alishba Khan"}, {r: "90030", n: "Alishbah Mir"}, {r: "90031", n: "Amrah Azhar"}, {r: "90032", n: "Anum Adil"}, {r: "90033", n: "Areeba Naeem"}, {r: "90034", n: "Ayesha Majid"}, {r: "90035", n: "Ayesha Shahid"}, {r: "90036", n: "Ayesha Tanveer"}, {r: "90037", n: "Dua Batool"}, {r: "90038", n: "Eman Shabraiz"}, {r: "90039", n: "Insha Ali"}, {r: "90040", n: "Inshera Manzoor"}, {r: "90041", n: "Inshira Farhan"}, {r: "90042", n: "Khadija Sardar"}, {r: "90043", n: "Maryam Naeem"}, {r: "90044", n: "Romesa Sultan"}, {r: "90045", n: "Ruhma"}, {r: "90046", n: "Sakina Ashfaq"}, {r: "90047", n: "Samia Yaseen"}, {r: "90048", n: "Simrah Nasir"}, {r: "90049", n: "Sukaina Murtaza Rind"}, {r: "90050", n: "Syeda Fizza Batool"}, {r: "90051", n: "Umaima Tanveer"}, {r: "90052", n: "Umm E Hani"}, {r: "90053", n: "Urwa Mushtaq"}, {r: "90054", n: "Uswah Khan"}, {r: "90055", n: "Zainab Gul"}],
+            "IXC": [{r: "90056", n: "Abdul Wahab"}, {r: "90057", n: "Ali Haider"}, {r: "90058", n: "Arsalan Ahmed"}, {r: "90059", n: "Asad Asif Azeem"}, {r: "90060", n: "Asad Nawaz"}, {r: "90061", n: "Asad Zeeshan"}, {r: "90062", n: "Ch Shabi Haider"}, {r: "90063", n: "Hafiz Ahmed Raza"}, {r: "90064", n: "Imran Ali"}, {r: "90065", n: "Muhammad Ahmad"}, {r: "90066", n: "Muhammad Fuzail"}, {r: "90067", n: "Muhammad Huzaifa"}, {r: "90068", n: "Muhammad Khashan Shafique"}, {r: "90069", n: "Mujtaba Khan Muhammad"}, {r: "90070", n: "Muhammad Muneeb"}, {r: "90071", n: "Abdul Rehman"}, {r: "90072", n: "Muhammad Musawir"}, {r: "90073", n: "Muhammad Muttahir Musaddiq"}, {r: "90074", n: "Muhammad Qasid Amazai"}, {r: "90075", n: "Muhammad Taishan Nawaz"}, {r: "90076", n: "Saad Ashfaq"}, {r: "90077", n: "Sana Ullah"}, {r: "90078", n: "Syed Muhammad Amaan Zaidi"}, {r: "90079", n: "Syed Muhammad Ibsham"}, {r: "90080", n: "Uzaam Shaheer"}, {r: "90081", n: "Wasay Khan"}, {r: "90082", n: "Youshay Afnan"}, {r: "90083", n: "Mehboob Ali"}, {r: "90143", n: "Ali Sher"}],
+            "IXD": [{r: "90084", n: "Abdul Basit"}, {r: "90085", n: "Aryan Khan"}, {r: "90086", n: "Abdullah Sajad"}, {r: "90087", n: "Abu Hurerah"}, {r: "90088", n: "Ahmad Kamran"}, {r: "90089", n: "Anfal Bhatti"}, {r: "90090", n: "Ashir Hanif Khan"}, {r: "90091", n: "Baqir Raza"}, {r: "90092", n: "Hafiz Yousha Ahmed"}, {r: "90093", n: "Muhammad Abdullah"}, {r: "90094", n: "Muhammad Abdullah Aqeel"}, {r: "90095", n: "Muhammad Abuzar"}, {r: "90096", n: "Muhammad Awais"}, {r: "90097", n: "Muhammad Ayan Shakeel"}, {r: "90098", n: "Muhammad Ayan Zafar"}, {r: "90099", n: "Muhammad Ayyan Shahid"}, {r: "90100", n: "Muhammad Haris Malik"}, {r: "90101", n: "Muhammad Jawad"}, {r: "90102", n: "Muhammad Sahil"}, {r: "90103", n: "Muhammad Taha Sajid"}, {r: "90104", n: "Muhammad Umar"}, {r: "90105", n: "Mustafa Aijaz"}, {r: "90106", n: "Omar Abdullah"}, {r: "90107", n: "Osman Abdul Ghani Bin Safi"}, {r: "90108", n: "Ghulam Mustafa"}, {r: "90109", n: "Saad Ahmed"}, {r: "90110", n: "Shafaat Hussain"}, {r: "90111", n: "Shameer Ahmed Khan"}, {r: "90112", n: "Mujeeb Amjad"}, {r: "90113", n: "Zamin Abbass"}],
+            "IXE": [{r: "90114", n: "Abdul Hadi Memon"}, {r: "90115", n: "Abdul Manan"}, {r: "90116", n: "Abdullah Gondal"}, {r: "90117", n: "Ch Muhammad Haider Amin"}, {r: "90118", n: "Dayan Hussain"}, {r: "90119", n: "Ghulam Mustafa"}, {r: "90120", n: "Humza Asif"}, {r: "90121", n: "Husain Buksh"}, {r: "90122", n: "Mir Hazar Khan"}, {r: "90123", n: "Mohammad Rafay"}, {r: "90124", n: "Mohammad Saad"}, {r: "90125", n: "Muhammad Hanzala"}, {r: "90126", n: "Muhammad Affan"}, {r: "90127", n: "Muhammad Ashar"}, {r: "90128", n: "Muhammad Hammad"}, {r: "90129", n: "Muhammad Haroon"}, {r: "90130", n: "Muhammad Hassaan Jamil"}, {r: "90131", n: "Muhammad Hunain Abbasi"}, {r: "90132", n: "Muhammad Maaz Ali"}, {r: "90133", n: "Muhammad Rayyan"}, {r: "90134", n: "Muhammad Shaheer Musaddiq"}, {r: "90135", n: "Muhammad Shehriyar Abbas"}, {r: "90136", n: "Muhammad Taha Murtaza"}, {r: "90137", n: "Muntazir Ali Mehdi"}, {r: "90138", n: "Rayyan Ahmed"}, {r: "90139", n: "Rayyan Mohsin"}, {r: "90140", n: "Shaikh Abdul Wahab"}, {r: "90141", n: "Syed Haider Abbas"}, {r: "90142", n: "Ubaidullah Tahir Mehmood"}]
+        };
+
+        const allClassesList = ["XA", "XB", "XC", "XD", "XE", "IXA", "IXB", "IXC", "IXD", "IXE"];
+        let currentSection = "";
+
+        // Today's Date Setup
+        let todayFullDate = new Date().toISOString().split('T')[0];
+        document.getElementById('recordDate').value = todayFullDate;
+        document.getElementById('recordMonth').value = todayFullDate.substring(0, 7);
+
+        function login() {
+            let pVal = document.getElementById('pinCode').value.trim();
+            if (pVal === "7860") {
+                document.getElementById('loginScreen').classList.remove('active');
+                document.getElementById('dashboardScreen').classList.add('active');
+                loadDashboard();
+            } else {
+                document.getElementById('loginError').style.display = "block";
+            }
+        }
+
+        function loadDashboard() {
+            let today = new Date().getDay();
+            document.getElementById('dayName').innerText = days[today];
+            
+            let todayClassesDiv = document.getElementById('todayClasses');
+            todayClassesDiv.innerHTML = "";
+            if(timetable[today] && timetable[today].length > 0) {
+                timetable[today].forEach(cls => {
+                    todayClassesDiv.innerHTML += `<button class="class-btn" onclick="openAttendance('${cls}')">${cls}</button>`;
+                });
+            } else {
+                todayClassesDiv.innerHTML = "<p style='text-align:center; color: var(--primary); font-weight: bold;'>No classes scheduled for today.</p>";
+            }
+
+            let allClassesDiv = document.getElementById('allClasses');
+            allClassesDiv.innerHTML = "";
+            allClassesList.forEach(cls => {
+                allClassesDiv.innerHTML += `<button class="class-btn" style="width: 48%;" onclick="openAttendance('${cls}')">${cls}</button>`;
+            });
+        }
+
+        function openAttendance(section) {
+            currentSection = section;
+            document.getElementById('dashboardScreen').classList.remove('active');
+            document.getElementById('attendanceScreen').classList.add('active');
+            
+            let dateObj = new Date();
+            let dateStr = dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            document.getElementById('currentClassTitle').innerText = "Class: " + section;
+            document.getElementById('currentDate').innerText = dateStr;
+
+            let listDiv = document.getElementById('studentsList');
+            listDiv.innerHTML = "";
+            
+            // Check if already saved today
+            let dateKey = dateObj.toISOString().split('T')[0];
+            let existingData = localStorage.getItem(`att_${dateKey}_${section}`);
+            let savedRecord = existingData ? JSON.parse(existingData) : {};
+
+            let sectionStudents = students[section] || [];
+            sectionStudents.forEach((student) => {
+                let s = savedRecord[student.r] || 'P'; // Default P if not saved
+                
+                listDiv.innerHTML += `
+                    <div class="student-row">
+                        <div class="student-info">${student.r} &nbsp;|&nbsp; ${student.n}</div>
+                        <div class="options">
+                            <label><input type="radio" name="st_${student.r}" value="P" class="opt-p" ${s==='P'?'checked':''}><span>Present</span></label>
+                            <label><input type="radio" name="st_${student.r}" value="A" class="opt-a" ${s==='A'?'checked':''}><span>Absent</span></label>
+                            <label><input type="radio" name="st_${student.r}" value="B" class="opt-b" ${s==='B'?'checked':''}><span>Bunk</span></label>
+                            <label><input type="radio" name="st_${student.r}" value="L" class="opt-l" ${s==='L'?'checked':''}><span>Late</span></label>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function saveAttendance() {
+            let sectionStudents = students[currentSection] || [];
+            let record = {};
+            sectionStudents.forEach(student => {
+                let status = document.querySelector(`input[name="st_${student.r}"]:checked`).value;
+                record[student.r] = status;
+            });
+            
+            let dateKey = new Date().toISOString().split('T')[0];
+            localStorage.setItem(`att_${dateKey}_${currentSection}`, JSON.stringify(record));
+            
+            alert(`Attendance for Class ${currentSection} saved successfully!`);
+            showDashboard();
+        }
+
+        function showDashboard() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('dashboardScreen').classList.add('active');
+        }
+
+        function openRecordsScreen() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('recordsScreen').classList.add('active');
+            document.getElementById('reportContainer').style.display = 'none';
+        }
+
+        function toggleDateInput() {
+            let type = document.getElementById('reportType').value;
+            if(type === 'daily') {
+                document.getElementById('dailyInputGroup').style.display = 'block';
+                document.getElementById('monthlyInputGroup').style.display = 'none';
+            } else {
+                document.getElementById('dailyInputGroup').style.display = 'none';
+                document.getElementById('monthlyInputGroup').style.display = 'block';
+            }
+        }
+
+        let currentReportData = [];
+
+        function generateReport() {
+            let cls = document.getElementById('recordClass').value;
+            let type = document.getElementById('reportType').value;
+            let filterDate = type === 'daily' ? document.getElementById('recordDate').value : document.getElementById('recordMonth').value;
+            
+            if(!filterDate) { alert("Please select a valid date/month."); return; }
+            
+            let clsStudents = students[cls] || [];
+            let report = {};
+            
+            // Initialize report structure
+            clsStudents.forEach(st => {
+                report[st.r] = { name: st.n, P: 0, A: 0, B: 0, L: 0, total: 0, status: '-' };
+            });
+
+            // Parse localStorage
+            let recordsFound = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                // key format: att_2026-11-13_XA
+                if (key.startsWith('att_') && key.endsWith(`_${cls}`)) {
+                    let datePart = key.split('_')[1];
+                    
+                    // Match daily (exact) or monthly (startsWith)
+                    if ((type === 'daily' && datePart === filterDate) || (type === 'monthly' && datePart.startsWith(filterDate))) {
+                        recordsFound++;
+                        let data = JSON.parse(localStorage.getItem(key));
+                        for (let roll in data) {
+                            if (report[roll] !== undefined) {
+                                let stStatus = data[roll];
+                                report[roll][stStatus]++;
+                                report[roll].total++;
+                                if(type === 'daily') report[roll].status = stStatus;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Render Table
+            let tableHeader = document.getElementById('tableHeader');
+            let tableBody = document.getElementById('tableBody');
+            tableHeader.innerHTML = ""; tableBody.innerHTML = "";
+            currentReportData = []; // for CSV export
+            
+            document.getElementById('reportTitle').innerText = `Report: Class ${cls} (${filterDate})`;
+
+            if (type === 'daily') {
+                tableHeader.innerHTML = `<th>Roll No</th><th>Student Name</th><th>Status</th>`;
+                clsStudents.forEach(st => {
+                    let d = report[st.r];
+                    let stText = d.status === 'P' ? 'Present' : d.status === 'A' ? 'Absent' : d.status === 'B' ? 'Bunk' : d.status === 'L' ? 'Late' : 'N/A';
+                    tableBody.innerHTML += `<tr><td>${st.r}</td><td>${d.name}</td><td>${stText}</td></tr>`;
+                    currentReportData.push([st.r, d.name, stText]);
+                });
+            } else {
+                tableHeader.innerHTML = `<th>Roll No</th><th>Student Name</th><th>P</th><th>A</th><th>B</th><th>L</th><th>Total</th>`;
+                clsStudents.forEach(st => {
+                    let d = report[st.r];
+                    tableBody.innerHTML += `<tr><td>${st.r}</td><td>${d.name}</td><td>${d.P}</td><td>${d.A}</td><td>${d.B}</td><td>${d.L}</td><td>${d.total}</td></tr>`;
+                    currentReportData.push([st.r, d.name, d.P, d.A, d.B, d.L, d.total]);
+                });
+            }
+
+            document.getElementById('reportContainer').style.display = 'block';
+            if (recordsFound === 0) {
+                tableBody.innerHTML = `<tr><td colspan="10" style="color:red;">No attendance records found for this period.</td></tr>`;
+                currentReportData = [];
+            }
+        }
+
+        function downloadCSV() {
+            if (currentReportData.length === 0) { alert("No data to download!"); return; }
+            
+            let cls = document.getElementById('recordClass').value;
+            let type = document.getElementById('reportType').value;
+            let filterDate = type === 'daily' ? document.getElementById('recordDate').value : document.getElementById('recordMonth').value;
+            
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            
+            // Add Header
+            if (type === 'daily') {
+                csvContent += "Roll No,Student Name,Status\n";
+            } else {
+                csvContent += "Roll No,Student Name,Present,Absent,Bunk,Late,Total Classes\n";
+            }
+
+            currentReportData.forEach(row => {
+                csvContent += row.join(",") + "\n";
+            });
+
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Attendance_${cls}_${filterDate}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
