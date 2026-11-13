@@ -7,6 +7,15 @@
     <style>
         body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 15px; color: #333; }
         .container { max-width: 750px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        
+        /* Login Screen Styles */
+        #loginScreen { text-align: center; padding: 40px 20px; }
+        #loginScreen h2 { color: #1b4d3e; margin-bottom: 10px; }
+        #loginScreen input { padding: 12px; font-size: 16px; width: 80%; max-width: 250px; border: 1px solid #ccc; border-radius: 5px; text-align: center; margin-bottom: 15px; }
+        #loginScreen button { display: block; width: 100%; max-width: 250px; margin: auto; padding: 12px; background: #1b4d3e; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* Portal Styles */
+        #portalScreen { display: none; }
         .header { text-align: center; border-bottom: 2px solid #1b4d3e; padding-bottom: 15px; margin-bottom: 20px; }
         .header h2 { color: #1b4d3e; margin: 0 0 5px 0; font-size: 20px; }
         .header p { margin: 3px 0; font-size: 13px; color: #555; }
@@ -17,7 +26,7 @@
         .control-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #1b4d3e; }
         .control-group input, .control-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
 
-        /* Quick Touch Class Buttons */
+        /* Touch Buttons for Today's Classes */
         .class-buttons-container { margin-bottom: 20px; }
         .class-buttons-container label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #1b4d3e; }
         .class-btns { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -27,11 +36,11 @@
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 14px; }
         th { background-color: #1b4d3e; color: white; }
-        td select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; }
+        td select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px; }
 
-        .summary-card { background: #eef2f3; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
-        .summary-item h4 { margin: 0 0 5px 0; color: #1b4d3e; font-size: 13px; }
-        .summary-item p { margin: 0; font-size: 16px; font-weight: bold; }
+        .summary-card { background: #eef2f3; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap; gap: 5px; }
+        .summary-item h4 { margin: 0 0 3px 0; color: #1b4d3e; font-size: 12px; }
+        .summary-item p { margin: 0; font-size: 15px; font-weight: bold; }
 
         .btn-container { display: flex; gap: 10px; }
         .btn { flex: 1; padding: 12px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; color: white; text-align: center; }
@@ -42,14 +51,27 @@
         @media print {
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; max-width: 100%; }
-            .btn-container, .class-buttons-container, .control-row { display: none; }
+            #loginScreen, .btn-container, .class-buttons-container, .control-row { display: none !important; }
+            #portalScreen { display: block !important; }
             td select { border: none; appearance: none; background: transparent; font-weight: bold; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- SECURE LOGIN SCREEN -->
+    <div id="loginScreen" class="container">
+        <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
+        <p>Faisal, Karachi - Senior Section</p>
+        <p style="margin-bottom: 20px; color: #1b4d3e; font-weight: bold;">SECURE ACCESS PORTAL</p>
+        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Please enter your official PIN to access the portal (7860)</p>
+        <input type="password" id="pinInput" placeholder="Enter PIN (7860)" maxlength="6">
+        <button onclick="verifyPin()">LOGIN TO SYSTEM</button>
+        <p id="errorMsg" style="color: red; font-size: 13px; margin-top: 10px; display: none;">Incorrect PIN! Please try again.</p>
+    </div>
+
+    <!-- MAIN ATTENDANCE PORTAL -->
+    <div id="portalScreen" class="container">
         <div class="header">
             <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
             <p>Faisal, Karachi - Senior Section</p>
@@ -74,17 +96,17 @@
             </div>
         </div>
 
-        <!-- Touch Buttons for Today's Classes -->
+        <!-- Touch Buttons for Today's Scheduled Classes -->
         <div class="class-buttons-container">
-            <label>Tap Your Class for Today:</label>
+            <label>Today's Scheduled Classes (Tap to Load):</label>
             <div id="classButtonsList" class="class-btns">
-                <!-- Buttons will appear here dynamically -->
+                <!-- Dynamically populated -->
             </div>
         </div>
 
         <div class="summary-card">
             <div class="summary-item">
-                <h4>Total Students</h4>
+                <h4>Total</h4>
                 <p id="totalCount">0</p>
             </div>
             <div class="summary-item">
@@ -92,8 +114,16 @@
                 <p id="presentCount" style="color: green;">0</p>
             </div>
             <div class="summary-item">
-                <h4>Absent / Leave</h4>
+                <h4>Absent</h4>
                 <p id="absentCount" style="color: red;">0</p>
+            </div>
+            <div class="summary-item">
+                <h4>Leave</h4>
+                <p id="leaveCount" style="color: orange;">0</p>
+            </div>
+            <div class="summary-item">
+                <h4>Late</h4>
+                <p id="lateCount" style="color: purple;">0</p>
             </div>
         </div>
 
@@ -150,7 +180,7 @@
             ]
         };
 
-        // Timetable mapping based on Teacher Umar's schedule
+        // Timetable mapping for Teacher Umar
         const timetable = {
             1: [ {id: "XD", name: "Class X-D"}, {id: "IXD", name: "Class IX-D"}, {id: "XE", name: "Class X-E"}, {id: "IXB", name: "Class IX-B"}, {id: "IXE", name: "Class IX-E"} ], // Monday
             2: [ {id: "XA", name: "Class X-A"}, {id: "XE", name: "Class X-E"}, {id: "IXB", name: "Class IX-B"}, {id: "IXE", name: "Class IX-E"} ], // Tuesday
@@ -159,11 +189,19 @@
             5: [ {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"}, {id: "IXA", name: "Class IX-A"} ] // Friday
         };
 
-        let activeClassId = "";
+        function verifyPin() {
+            let pin = document.getElementById('pinInput').value;
+            if (pin === "7860") {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('portalScreen').style.display = 'block';
+                document.getElementById('attendanceDate').valueAsDate = new Date();
+                updateDaySchedule();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
 
-        // Set today's date automatically
-        document.getElementById('attendanceDate').valueAsDate = new Date();
-        updateDaySchedule();
+        let activeClassId = "";
 
         function updateDaySchedule() {
             let dateVal = document.getElementById('attendanceDate').value;
@@ -172,6 +210,7 @@
 
             let scheduled = timetable[dayOfWeek];
             if (!scheduled) {
+                // Fallback show all if weekend
                 scheduled = [
                     {id: "XA", name: "Class X-A"}, {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"}, {id: "XD", name: "Class X-D"}, {id: "XE", name: "Class X-E"},
                     {id: "IXA", name: "Class IX-A"}, {id: "IXB", name: "Class IX-B"}, {id: "IXC", name: "Class IX-C"}, {id: "IXD", name: "Class IX-D"}, {id: "IXE", name: "Class IX-E"}
@@ -215,6 +254,7 @@
                             <option value="Present">Present</option>
                             <option value="Absent">Absent</option>
                             <option value="Leave">Leave</option>
+                            <option value="Late">Late</option>
                         </select>
                     </td>
                 </tr>`;
@@ -226,17 +266,20 @@
         function updateSummary() {
             let selects = document.querySelectorAll('.status-select');
             let total = selects.length;
-            let present = 0;
-            let absent = 0;
+            let present = 0, absent = 0, leave = 0, late = 0;
 
             selects.forEach(select => {
                 if (select.value === 'Present') present++;
-                else if (select.value === 'Absent' || select.value === 'Leave') absent++;
+                else if (select.value === 'Absent') absent++;
+                else if (select.value === 'Leave') leave++;
+                else if (select.value === 'Late') late++;
             });
 
             document.getElementById('totalCount').innerText = total;
             document.getElementById('presentCount').innerText = present;
             document.getElementById('absentCount').innerText = absent;
+            document.getElementById('leaveCount').innerText = leave;
+            document.getElementById('lateCount').innerText = late;
         }
 
         function shareWhatsApp() {
@@ -247,6 +290,8 @@
             let total = document.getElementById('totalCount').innerText;
             let present = document.getElementById('presentCount').innerText;
             let absent = document.getElementById('absentCount').innerText;
+            let leave = document.getElementById('leaveCount').innerText;
+            let late = document.getElementById('lateCount').innerText;
 
             let report = `📋 *APS&C E-Attendance Report* 📋\n`;
             report += `🏫 *Class:* ${className}\n`;
@@ -254,7 +299,9 @@
             report += `📅 *Date:* ${date}\n\n`;
             report += `👥 *Total Students:* ${total}\n`;
             report += `✅ *Present:* ${present}\n`;
-            report += `❌ *Absent/Leave:* ${absent}\n\n`;
+            report += `❌ *Absent:* ${absent}\n`;
+            report += `🏖️ *Leave:* ${leave}\n`;
+            report += `⏰ *Late:* ${late}\n\n`;
             report += `Teacher: Syed Muhammad Umer Fareed\n`;
             report += `Army Public School & College, Karachi`;
 
