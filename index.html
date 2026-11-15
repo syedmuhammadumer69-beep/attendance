@@ -19,7 +19,7 @@
         .header { text-align: center; border-bottom: 2px solid #1b4d3e; padding-bottom: 12px; margin-bottom: 15px; }
         .header h2 { color: #1b4d3e; margin: 0 0 4px 0; font-size: 20px; letter-spacing: 0.5px; }
         .header p { margin: 2px 0; font-size: 13px; color: #555; }
-        .portal-badge { display: inline-block; margin-top: 6px; padding: 4px 12px; background: #e8f5e9; color: #1b4d3e; font-size: 13px; font-weight: bold; border-radius: 20px; }
+        .portal-badge { display: inline-block; margin-top: 6px; padding: 4px 12px; background: #e8f5e9; color: #1b4d3e; font-size: 12px; font-weight: bold; border-radius: 20px; }
         
         .control-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .control-group { flex: 1; min-width: 150px; }
@@ -32,6 +32,7 @@
         .class-btns { display: flex; gap: 7px; flex-wrap: wrap; }
         .class-btn { padding: 8px 14px; background: white; border: 1.5px solid #1b4d3e; color: #1b4d3e; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
         .class-btn.other-btn { border-color: #64748b; color: #475569; font-weight: 600; }
+        .class-btn.saved-class { background: #dcfce7; border-color: #16a34a; color: #15803d; }
         .class-btn.active { background: #1b4d3e !important; color: white !important; border-color: #1b4d3e !important; box-shadow: 0 2px 6px rgba(27,77,62,0.3); }
 
         /* Empty Prompt */
@@ -40,7 +41,8 @@
         /* Attendance Content Wrapper */
         #attendanceContent { display: none; }
 
-        .active-class-banner { background: #1b4d3e; color: white; padding: 8px 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
+        .active-class-banner { background: #1b4d3e; color: white; padding: 8px 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; flex-wrap: wrap; gap: 5px; }
+        .save-status-badge { background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: normal; }
 
         /* Summary Bar */
         .summary-card { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; text-align: center; border: 1px solid #e2e8f0; }
@@ -74,17 +76,23 @@
         .print-status-text { display: none; font-weight: bold; font-size: 11px; }
 
         /* Action Buttons */
-        .btn-container { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; text-align: center; }
+        .btn-container { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { flex: 1; min-width: 140px; padding: 12px 10px; border: none; border-radius: 8px; font-size: 13.5px; font-weight: bold; cursor: pointer; color: white; text-align: center; }
+        .btn-save { background: #0f766e; }
         .btn-whatsapp { background: #16a34a; }
         .btn-pdf { background: #0284c7; }
+        .btn-clear { background: #64748b; flex: 0.4; min-width: 90px; }
+
+        /* Toast Notification */
+        #toastMsg { visibility: hidden; min-width: 250px; background-color: #1b4d3e; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        #toastMsg.show { visibility: visible; }
 
         /* SINGLE-PAGE COMPACT PDF PRINT STYLING */
         @media print {
             @page { size: A4 portrait; margin: 5mm 8mm; }
             body { background: white; padding: 0; margin: 0; font-size: 10px; }
             .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; border: none; }
-            #loginScreen, .btn-container, .class-section, .control-row, #emptyPrompt, .status-pills { display: none !important; }
+            #loginScreen, .btn-container, .class-section, .control-row, #emptyPrompt, .status-pills, #toastMsg, .save-status-badge { display: none !important; }
             #portalScreen, #attendanceContent { display: block !important; }
             
             .header { padding-bottom: 4px; margin-bottom: 6px; border-bottom: 1.5px solid #1b4d3e; }
@@ -99,7 +107,6 @@
             .summary-item h4 { font-size: 8.5px; margin: 0; }
             .summary-item p { font-size: 11px; }
 
-            /* Ultra-compact table so 30 rows easily fit on 1 page */
             .modern-table { border-collapse: collapse; border-spacing: 0; margin-bottom: 0; width: 100%; }
             .modern-table thead th { background: #1b4d3e !important; color: white !important; padding: 3px 6px; font-size: 9.5px; border: 1px solid #1b4d3e; border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .modern-table tbody tr { box-shadow: none; page-break-inside: avoid; }
@@ -128,7 +135,7 @@
             <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
             <p>Faisal, Karachi - Senior Section</p>
             <p><b>Subject:</b> Tarjuma-tul-Quran / Islamiyat | <b>Teacher:</b> Syed Muhammad Umer Fareed</p>
-            <span class="portal-badge">E-ATTENDANCE PORTAL</span>
+            <span class="portal-badge">E-ATTENDANCE PORTAL (OFFLINE READY)</span>
         </div>
 
         <div class="control-row">
@@ -160,13 +167,15 @@
 
         <!-- Prompt shown when no class is selected -->
         <div id="emptyPrompt">
-            👆 Please tap on any class button above to load the student list.
+            👆 Please tap on any class button above to load the student list.<br>
+            <small style="color: #16a34a; font-weight: normal;">(Classes with ✅ already have saved attendance for the selected date)</small>
         </div>
 
         <!-- Hidden until a class is clicked -->
         <div id="attendanceContent">
             <div class="active-class-banner">
                 <span id="bannerClass">Class: None</span>
+                <span id="saveIndicator" class="save-status-badge">Auto-Save Ready</span>
                 <span id="bannerDate">Date: --</span>
             </div>
 
@@ -209,11 +218,15 @@
             </table>
 
             <div class="btn-container">
-                <button class="btn btn-whatsapp" onclick="shareWhatsApp()">Share via WhatsApp</button>
-                <button class="btn btn-pdf" onclick="downloadPDF()">Save 1-Page PDF</button>
+                <button class="btn btn-save" onclick="saveOfflineManual()">💾 Save Offline</button>
+                <button class="btn btn-whatsapp" onclick="shareWhatsApp()">📲 Share WhatsApp</button>
+                <button class="btn btn-pdf" onclick="downloadPDF()">📄 1-Page PDF</button>
+                <button class="btn btn-clear" onclick="resetCurrentClass()">🔄 Reset</button>
             </div>
         </div>
     </div>
+
+    <div id="toastMsg">✅ Attendance Saved Offline!</div>
 
     <script>
         const studentsData = {
@@ -269,6 +282,10 @@
         let activeClassId = "";
         let activeClassName = "";
 
+        function getStorageKey(date, classId) {
+            return `apsc_att_${date}_${classId}`;
+        }
+
         function verifyPin() {
             let pin = document.getElementById('pinInput').value;
             if (pin === "7860") {
@@ -303,24 +320,40 @@
             allClassesList.forEach(cls => {
                 let btn = document.createElement('button');
                 btn.type = "button";
-                btn.innerText = cls.name;
+                btn.dataset.cid = cls.id;
+                btn.dataset.cname = cls.name;
                 
+                let isSaved = localStorage.getItem(getStorageKey(dateVal, cls.id)) !== null;
+                btn.innerText = isSaved ? `${cls.name} ✅` : cls.name;
+
                 if (scheduledIds.includes(cls.id)) {
-                    btn.className = "class-btn";
+                    btn.className = "class-btn" + (isSaved ? " saved-class" : "");
                     btn.onclick = () => selectClass(cls.id, cls.name, btn);
                     scheduledContainer.appendChild(btn);
                 } else {
-                    btn.className = "class-btn other-btn";
+                    btn.className = "class-btn other-btn" + (isSaved ? " saved-class" : "");
                     btn.onclick = () => selectClass(cls.id, cls.name, btn);
                     otherContainer.appendChild(btn);
                 }
             });
 
-            // Reset view so no students show automatically until user clicks a class
+            // Keep student list hidden until user explicitly taps a class button
             document.getElementById('attendanceContent').style.display = 'none';
             document.getElementById('emptyPrompt').style.display = 'block';
             activeClassId = "";
             activeClassName = "";
+        }
+
+        function refreshButtonBadges() {
+            let dateVal = document.getElementById('attendanceDate').value;
+            document.querySelectorAll('.class-btn').forEach(btn => {
+                let cid = btn.dataset.cid;
+                let cname = btn.dataset.cname;
+                let isSaved = localStorage.getItem(getStorageKey(dateVal, cid)) !== null;
+                btn.innerText = isSaved ? `${cname} ✅` : cname;
+                if (isSaved) btn.classList.add('saved-class');
+                else btn.classList.remove('saved-class');
+            });
         }
 
         function selectClass(classId, className, btnElement) {
@@ -349,10 +382,23 @@
             let tbody = document.getElementById('studentTableBody');
             tbody.innerHTML = "";
 
-            list.forEach((student, idx) => {
+            let dateVal = document.getElementById('attendanceDate').value;
+            let savedRaw = localStorage.getItem(getStorageKey(dateVal, classKey));
+            let savedRecord = savedRaw ? JSON.parse(savedRaw) : null;
+
+            const colors = {
+                'Present': '#16a34a',
+                'Absent': '#dc2626',
+                'Leave': '#d97706',
+                'Late': '#7c3aed',
+                'Bunk': '#1e293b'
+            };
+
+            list.forEach((student) => {
+                let st = (savedRecord && savedRecord[student.roll]) ? savedRecord[student.roll] : "Present";
                 let tr = document.createElement('tr');
                 tr.className = "student-row";
-                tr.dataset.status = "Present";
+                tr.dataset.status = st;
                 tr.dataset.roll = student.roll;
                 tr.dataset.name = student.name;
 
@@ -361,17 +407,24 @@
                     <td>${student.name}</td>
                     <td>
                         <div class="status-pills">
-                            <span class="pill P selected" onclick="setStatus(this, 'Present')">P</span>
-                            <span class="pill A" onclick="setStatus(this, 'Absent')">A</span>
-                            <span class="pill L" onclick="setStatus(this, 'Leave')">L</span>
-                            <span class="pill Lt" onclick="setStatus(this, 'Late')">Lt</span>
-                            <span class="pill B" onclick="setStatus(this, 'Bunk')">B</span>
+                            <span class="pill P ${st === 'Present' ? 'selected' : ''}" onclick="setStatus(this, 'Present')">P</span>
+                            <span class="pill A ${st === 'Absent' ? 'selected' : ''}" onclick="setStatus(this, 'Absent')">A</span>
+                            <span class="pill L ${st === 'Leave' ? 'selected' : ''}" onclick="setStatus(this, 'Leave')">L</span>
+                            <span class="pill Lt ${st === 'Late' ? 'selected' : ''}" onclick="setStatus(this, 'Late')">Lt</span>
+                            <span class="pill B ${st === 'Bunk' ? 'selected' : ''}" onclick="setStatus(this, 'Bunk')">B</span>
                         </div>
-                        <span class="print-status-text" style="color: #16a34a;">Present</span>
+                        <span class="print-status-text" style="color: ${colors[st]};">${st}</span>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+
+            if (savedRecord) {
+                document.getElementById('saveIndicator').innerText = "✅ Loaded from Offline Storage";
+            } else {
+                document.getElementById('saveIndicator').innerText = "⚡ Auto-Save Active";
+            }
+
             updateSummary();
         }
 
@@ -396,6 +449,44 @@
             printSpan.style.color = colors[status] || '#000';
 
             updateSummary();
+            saveToLocalStorage(false); // Auto-save silently on every touch
+        }
+
+        function saveToLocalStorage(showNotification) {
+            if (!activeClassId) return;
+            let dateVal = document.getElementById('attendanceDate').value;
+            let record = {};
+            document.querySelectorAll('.student-row').forEach(r => {
+                record[r.dataset.roll] = r.dataset.status;
+            });
+
+            localStorage.setItem(getStorageKey(dateVal, activeClassId), JSON.stringify(record));
+            document.getElementById('saveIndicator').innerText = "✅ Saved Offline";
+            refreshButtonBadges();
+
+            if (showNotification) {
+                showToast(`✅ ${activeClassName} Attendance Saved Offline!`);
+            }
+        }
+
+        function saveOfflineManual() {
+            saveToLocalStorage(true);
+        }
+
+        function resetCurrentClass() {
+            if (!activeClassId) return;
+            let dateVal = document.getElementById('attendanceDate').value;
+            localStorage.removeItem(getStorageKey(dateVal, activeClassId));
+            refreshButtonBadges();
+            loadStudents(activeClassId);
+            showToast(`🔄 ${activeClassName} Reset to All Present!`);
+        }
+
+        function showToast(msg) {
+            let toast = document.getElementById('toastMsg');
+            toast.innerText = msg;
+            toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
         }
 
         function updateSummary() {
@@ -422,6 +513,8 @@
 
         function shareWhatsApp() {
             if (!activeClassId) return;
+            saveToLocalStorage(false);
+
             let date = document.getElementById('attendanceDate').value;
             let type = document.getElementById('reportType').value;
             let total = document.getElementById('totalCount').innerText;
@@ -431,13 +524,14 @@
             let late = document.getElementById('lateCount').innerText;
             let bunk = document.getElementById('bunkCount').innerText;
 
-            let absentList = [], bunkList = [], lateList = [];
+            let absentList = [], bunkList = [], lateList = [], leaveList = [];
             document.querySelectorAll('.student-row').forEach(r => {
                 let st = r.dataset.status;
                 let info = `${r.dataset.roll} - ${r.dataset.name}`;
                 if (st === 'Absent') absentList.push(info);
                 else if (st === 'Bunk') bunkList.push(info);
                 else if (st === 'Late') lateList.push(info);
+                else if (st === 'Leave') leaveList.push(info);
             });
 
             let report = `📋 *APS&C E-Attendance Report* 📋\n`;
@@ -451,6 +545,7 @@
             if (absentList.length > 0) report += `\n❌ *Absent Students:*\n` + absentList.join('\n') + `\n`;
             if (bunkList.length > 0) report += `\n🚨 *Bunk Students:*\n` + bunkList.join('\n') + `\n`;
             if (lateList.length > 0) report += `\n⏰ *Late Students:*\n` + lateList.join('\n') + `\n`;
+            if (leaveList.length > 0) report += `\n🏖️ *On Leave:*\n` + leaveList.join('\n') + `\n`;
 
             report += `\n*Teacher:* Syed Muhammad Umer Fareed`;
 
@@ -459,6 +554,7 @@
         }
 
         function downloadPDF() {
+            saveToLocalStorage(false);
             window.print();
         }
     </script>
