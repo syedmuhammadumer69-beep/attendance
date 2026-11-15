@@ -5,144 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>APS&C E-Attendance Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 15px; color: #333; }
-        .container { max-width: 750px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #eef2f5; margin: 0; padding: 12px; color: #2c3e50; }
+        .container { max-width: 780px; margin: auto; background: white; padding: 18px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
         
-        /* Login Screen Styles */
+        /* Login Screen */
         #loginScreen { text-align: center; padding: 40px 20px; }
-        #loginScreen h2 { color: #1b4d3e; margin-bottom: 10px; }
-        #loginScreen input { padding: 12px; font-size: 16px; width: 80%; max-width: 250px; border: 1px solid #ccc; border-radius: 5px; text-align: center; margin-bottom: 15px; }
-        #loginScreen button { display: block; width: 100%; max-width: 250px; margin: auto; padding: 12px; background: #1b4d3e; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        #loginScreen h2 { color: #1b4d3e; margin-bottom: 8px; }
+        #loginScreen input { padding: 12px; font-size: 16px; width: 80%; max-width: 240px; border: 1.5px solid #cbd5e1; border-radius: 8px; text-align: center; margin-bottom: 15px; outline: none; }
+        #loginScreen button { display: block; width: 100%; max-width: 240px; margin: auto; padding: 12px; background: #1b4d3e; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
 
-        /* Portal Styles */
+        /* Portal Screen */
         #portalScreen { display: none; }
-        .header { text-align: center; border-bottom: 2px solid #1b4d3e; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h2 { color: #1b4d3e; margin: 0 0 5px 0; font-size: 20px; }
-        .header p { margin: 3px 0; font-size: 13px; color: #555; }
+        .header { text-align: center; border-bottom: 2px solid #1b4d3e; padding-bottom: 12px; margin-bottom: 15px; }
+        .header h2 { color: #1b4d3e; margin: 0 0 4px 0; font-size: 20px; letter-spacing: 0.5px; }
+        .header p { margin: 2px 0; font-size: 13px; color: #555; }
+        .portal-badge { display: inline-block; margin-top: 6px; padding: 4px 12px; background: #e8f5e9; color: #1b4d3e; font-size: 13px; font-weight: bold; border-radius: 20px; }
         
-        .controls { margin-bottom: 20px; }
-        .control-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
-        .control-group { flex: 1; min-width: 200px; }
-        .control-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 13px; color: #1b4d3e; }
-        .control-group input, .control-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
+        .control-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .control-group { flex: 1; min-width: 150px; }
+        .control-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #1b4d3e; text-transform: uppercase; }
+        .control-group input, .control-group select { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; box-sizing: border-box; background: #f8fafc; }
 
-        /* Touch Buttons for Today's Classes */
-        .class-buttons-container { margin-bottom: 20px; }
-        .class-buttons-container label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #1b4d3e; }
-        .class-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        .class-btn { padding: 10px 15px; background: #eef2f3; border: 1px solid #1b4d3e; color: #1b4d3e; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 14px; }
-        .class-btn.active { background: #1b4d3e; color: white; }
+        /* Class Sections */
+        .class-section { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 12px; }
+        .class-section label { display: block; font-weight: bold; margin-bottom: 8px; font-size: 13px; color: #1b4d3e; }
+        .class-btns { display: flex; gap: 7px; flex-wrap: wrap; }
+        .class-btn { padding: 8px 14px; background: white; border: 1.5px solid #1b4d3e; color: #1b4d3e; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .class-btn.other-btn { border-color: #64748b; color: #475569; font-weight: 600; }
+        .class-btn.active { background: #1b4d3e !important; color: white !important; border-color: #1b4d3e !important; box-shadow: 0 2px 6px rgba(27,77,62,0.3); }
 
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 14px; }
-        th { background-color: #1b4d3e; color: white; }
-        td select { padding: 5px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px; }
+        /* Empty Prompt */
+        #emptyPrompt { text-align: center; padding: 35px 15px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px; color: #64748b; font-size: 15px; font-weight: 600; margin-bottom: 15px; }
 
-        .summary-card { background: #eef2f3; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; flex-wrap: wrap; gap: 5px; }
-        .summary-item h4 { margin: 0 0 3px 0; color: #1b4d3e; font-size: 12px; }
+        /* Attendance Content Wrapper */
+        #attendanceContent { display: none; }
+
+        .active-class-banner { background: #1b4d3e; color: white; padding: 8px 15px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: bold; }
+
+        /* Summary Bar */
+        .summary-card { background: #f1f5f9; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; text-align: center; border: 1px solid #e2e8f0; }
+        .summary-item { background: white; padding: 6px 2px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        .summary-item h4 { margin: 0 0 2px 0; color: #475569; font-size: 11px; text-transform: uppercase; }
         .summary-item p { margin: 0; font-size: 15px; font-weight: bold; }
 
-        .btn-container { display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 12px; border: none; border-radius: 5px; font-size: 15px; font-weight: bold; cursor: pointer; color: white; text-align: center; }
-        .btn-whatsapp { background: #28a745; }
-        .btn-pdf { background: #007bff; }
-        .btn:hover { opacity: 0.9; }
+        /* Modernized Table Layout */
+        .modern-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin-bottom: 18px; }
+        .modern-table thead th { background: #1b4d3e; color: white; padding: 10px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .modern-table thead th:first-child { border-radius: 6px 0 0 6px; width: 18%; }
+        .modern-table thead th:nth-child(2) { text-align: left; padding-left: 12px; width: 42%; }
+        .modern-table thead th:last-child { border-radius: 0 6px 6px 0; width: 40%; }
 
+        .modern-table tbody tr { background: #ffffff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: 0.15s; }
+        .modern-table tbody td { padding: 8px 6px; border-top: 1px solid #edf2f7; border-bottom: 1px solid #edf2f7; font-size: 13.5px; vertical-align: middle; }
+        .modern-table tbody td:first-child { border-left: 4px solid #1b4d3e; border-radius: 6px 0 0 6px; font-weight: bold; color: #1b4d3e; text-align: center; background: #f8fafc; }
+        .modern-table tbody td:nth-child(2) { text-align: left; padding-left: 12px; font-weight: 600; color: #1e293b; }
+        .modern-table tbody td:last-child { border-right: 1px solid #edf2f7; border-radius: 0 6px 6px 0; text-align: center; }
+
+        /* One-Touch Status Pills */
+        .status-pills { display: flex; justify-content: center; gap: 4px; flex-wrap: nowrap; }
+        .pill { padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; background: #f8fafc; color: #475569; font-size: 12px; font-weight: bold; cursor: pointer; min-width: 32px; text-align: center; user-select: none; }
+        
+        .pill.P.selected { background: #16a34a; color: white; border-color: #16a34a; }
+        .pill.A.selected { background: #dc2626; color: white; border-color: #dc2626; }
+        .pill.L.selected { background: #d97706; color: white; border-color: #d97706; }
+        .pill.Lt.selected { background: #7c3aed; color: white; border-color: #7c3aed; }
+        .pill.B.selected { background: #1e293b; color: white; border-color: #1e293b; }
+
+        .print-status-text { display: none; font-weight: bold; font-size: 11px; }
+
+        /* Action Buttons */
+        .btn-container { display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; color: white; text-align: center; }
+        .btn-whatsapp { background: #16a34a; }
+        .btn-pdf { background: #0284c7; }
+
+        /* SINGLE-PAGE COMPACT PDF PRINT STYLING */
         @media print {
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; padding: 0; max-width: 100%; }
-            #loginScreen, .btn-container, .class-buttons-container, .control-row { display: none !important; }
-            #portalScreen { display: block !important; }
-            td select { border: none; appearance: none; background: transparent; font-weight: bold; }
+            @page { size: A4 portrait; margin: 5mm 8mm; }
+            body { background: white; padding: 0; margin: 0; font-size: 10px; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; border: none; }
+            #loginScreen, .btn-container, .class-section, .control-row, #emptyPrompt, .status-pills { display: none !important; }
+            #portalScreen, #attendanceContent { display: block !important; }
+            
+            .header { padding-bottom: 4px; margin-bottom: 6px; border-bottom: 1.5px solid #1b4d3e; }
+            .header h2 { font-size: 14px; margin: 0; }
+            .header p { font-size: 9.5px; margin: 1px 0; }
+            .portal-badge { display: none; }
+
+            .active-class-banner { background: #f1f5f9 !important; color: #000 !important; border: 1px solid #ccc; padding: 4px 10px; margin-bottom: 6px; font-size: 11px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+            .summary-card { padding: 4px; margin-bottom: 6px; gap: 4px; border: 1px solid #ccc; background: #fff; }
+            .summary-item { padding: 2px; border: 1px solid #eee; box-shadow: none; }
+            .summary-item h4 { font-size: 8.5px; margin: 0; }
+            .summary-item p { font-size: 11px; }
+
+            /* Ultra-compact table so 30 rows easily fit on 1 page */
+            .modern-table { border-collapse: collapse; border-spacing: 0; margin-bottom: 0; width: 100%; }
+            .modern-table thead th { background: #1b4d3e !important; color: white !important; padding: 3px 6px; font-size: 9.5px; border: 1px solid #1b4d3e; border-radius: 0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .modern-table tbody tr { box-shadow: none; page-break-inside: avoid; }
+            .modern-table tbody td { padding: 2.2px 6px !important; font-size: 9.5px !important; border: 1px solid #cbd5e1 !important; border-radius: 0 !important; line-height: 1.15; }
+            .modern-table tbody td:first-child { border-left: 1px solid #cbd5e1 !important; background: transparent !important; }
+            
+            .print-status-text { display: inline-block !important; font-size: 9.5px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- SECURE LOGIN SCREEN -->
+    <!-- LOGIN SCREEN -->
     <div id="loginScreen" class="container">
         <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
         <p>Faisal, Karachi - Senior Section</p>
-        <p style="margin-bottom: 20px; color: #1b4d3e; font-weight: bold;">SECURE ACCESS PORTAL</p>
-        <p style="font-size: 13px; color: #666; margin-bottom: 10px;">Please enter your official PIN to access the portal (7860)</p>
+        <p style="margin-bottom: 20px; color: #1b4d3e; font-weight: bold;">SECURE E-ATTENDANCE PORTAL</p>
         <input type="password" id="pinInput" placeholder="Enter PIN (7860)" maxlength="6">
-        <button onclick="verifyPin()">LOGIN TO SYSTEM</button>
-        <p id="errorMsg" style="color: red; font-size: 13px; margin-top: 10px; display: none;">Incorrect PIN! Please try again.</p>
+        <button onclick="verifyPin()">LOGIN</button>
+        <p id="errorMsg" style="color: red; font-size: 13px; margin-top: 10px; display: none;">Incorrect PIN! Try again.</p>
     </div>
 
-    <!-- MAIN ATTENDANCE PORTAL -->
+    <!-- MAIN PORTAL -->
     <div id="portalScreen" class="container">
         <div class="header">
             <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
             <p>Faisal, Karachi - Senior Section</p>
             <p><b>Subject:</b> Tarjuma-tul-Quran / Islamiyat | <b>Teacher:</b> Syed Muhammad Umer Fareed</p>
-            <p style="margin-top: 6px; font-size: 15px; color: #1b4d3e; font-weight: bold;">E-ATTENDANCE PORTAL</p>
+            <span class="portal-badge">E-ATTENDANCE PORTAL</span>
         </div>
 
-        <div class="controls">
-            <div class="control-row">
-                <div class="control-group">
-                    <label>Report Type:</label>
-                    <select id="reportType">
-                        <option value="Daily">Daily Report</option>
-                        <option value="Weekly">Weekly Report</option>
-                        <option value="Monthly">Monthly Report</option>
-                    </select>
+        <div class="control-row">
+            <div class="control-group">
+                <label>Report Type:</label>
+                <select id="reportType" onchange="updateBanner()">
+                    <option value="Daily Report">Daily Report</option>
+                    <option value="Weekly Report">Weekly Report</option>
+                    <option value="Monthly Report">Monthly Report</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Select Date:</label>
+                <input type="date" id="attendanceDate" onchange="updateDaySchedule()">
+            </div>
+        </div>
+
+        <!-- 1. Scheduled Classes According to Timetable -->
+        <div class="class-section">
+            <label id="scheduledLabel">📅 Today's Scheduled Classes (As Per Timetable):</label>
+            <div id="scheduledButtonsList" class="class-btns"></div>
+        </div>
+
+        <!-- 2. Other / Substitute Classes -->
+        <div class="class-section" style="background: #ffffff;">
+            <label style="color: #475569;">🔄 Other Classes (For Substitute / Extra Lecture):</label>
+            <div id="otherButtonsList" class="class-btns"></div>
+        </div>
+
+        <!-- Prompt shown when no class is selected -->
+        <div id="emptyPrompt">
+            👆 Please tap on any class button above to load the student list.
+        </div>
+
+        <!-- Hidden until a class is clicked -->
+        <div id="attendanceContent">
+            <div class="active-class-banner">
+                <span id="bannerClass">Class: None</span>
+                <span id="bannerDate">Date: --</span>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-item">
+                    <h4>Total</h4>
+                    <p id="totalCount">0</p>
                 </div>
-                <div class="control-group">
-                    <label>Select Date:</label>
-                    <input type="date" id="attendanceDate" onchange="updateDaySchedule()">
+                <div class="summary-item">
+                    <h4>Present</h4>
+                    <p id="presentCount" style="color: #16a34a;">0</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Absent</h4>
+                    <p id="absentCount" style="color: #dc2626;">0</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Leave</h4>
+                    <p id="leaveCount" style="color: #d97706;">0</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Late</h4>
+                    <p id="lateCount" style="color: #7c3aed;">0</p>
+                </div>
+                <div class="summary-item">
+                    <h4>Bunk</h4>
+                    <p id="bunkCount" style="color: #1e293b;">0</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Touch Buttons for Today's Scheduled Classes -->
-        <div class="class-buttons-container">
-            <label>Today's Scheduled Classes (Tap to Load):</label>
-            <div id="classButtonsList" class="class-btns">
-                <!-- Dynamically populated -->
-            </div>
-        </div>
+            <table class="modern-table">
+                <thead>
+                    <tr>
+                        <th>Roll No</th>
+                        <th>Student Name</th>
+                        <th>Attendance Status</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody"></tbody>
+            </table>
 
-        <div class="summary-card">
-            <div class="summary-item">
-                <h4>Total</h4>
-                <p id="totalCount">0</p>
+            <div class="btn-container">
+                <button class="btn btn-whatsapp" onclick="shareWhatsApp()">Share via WhatsApp</button>
+                <button class="btn btn-pdf" onclick="downloadPDF()">Save 1-Page PDF</button>
             </div>
-            <div class="summary-item">
-                <h4>Present</h4>
-                <p id="presentCount" style="color: green;">0</p>
-            </div>
-            <div class="summary-item">
-                <h4>Absent</h4>
-                <p id="absentCount" style="color: red;">0</p>
-            </div>
-            <div class="summary-item">
-                <h4>Leave</h4>
-                <p id="leaveCount" style="color: orange;">0</p>
-            </div>
-            <div class="summary-item">
-                <h4>Late</h4>
-                <p id="lateCount" style="color: purple;">0</p>
-            </div>
-        </div>
-
-        <table id="attendanceTable">
-            <thead>
-                <tr>
-                    <th>Roll No</th>
-                    <th>Student Name</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody id="studentTableBody">
-                <!-- Students loaded dynamically -->
-            </tbody>
-        </table>
-
-        <div class="btn-container">
-            <button class="btn btn-whatsapp" onclick="shareWhatsApp()">Share via WhatsApp</button>
-            <button class="btn btn-pdf" onclick="downloadPDF()">Download / Print PDF</button>
         </div>
     </div>
 
@@ -180,14 +249,25 @@
             ]
         };
 
+        const allClassesList = [
+            {id: "XA", name: "Class X-A"}, {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"},
+            {id: "XD", name: "Class X-D"}, {id: "XE", name: "Class X-E"}, {id: "IXA", name: "Class IX-A"},
+            {id: "IXB", name: "Class IX-B"}, {id: "IXC", name: "Class IX-C"}, {id: "IXD", name: "Class IX-D"},
+            {id: "IXE", name: "Class IX-E"}
+        ];
+
         // Timetable mapping for Teacher Umar
         const timetable = {
-            1: [ {id: "XD", name: "Class X-D"}, {id: "IXD", name: "Class IX-D"}, {id: "XE", name: "Class X-E"}, {id: "IXB", name: "Class IX-B"}, {id: "IXE", name: "Class IX-E"} ], // Monday
-            2: [ {id: "XA", name: "Class X-A"}, {id: "XE", name: "Class X-E"}, {id: "IXB", name: "Class IX-B"}, {id: "IXE", name: "Class IX-E"} ], // Tuesday
-            3: [ {id: "IXD", name: "Class IX-D"}, {id: "XD", name: "Class X-D"}, {id: "IXC", name: "Class IX-C"}, {id: "XC", name: "Class X-C"} ], // Wednesday
-            4: [ {id: "XB", name: "Class X-B"}, {id: "XA", name: "Class X-A"}, {id: "IXA", name: "Class IX-A"}, {id: "IXC", name: "Class IX-C"} ], // Thursday
-            5: [ {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"}, {id: "IXA", name: "Class IX-A"} ] // Friday
+            1: ["XD", "IXD", "XE", "IXB", "IXE"], // Monday
+            2: ["XA", "XE", "IXB", "IXE"],        // Tuesday
+            3: ["IXD", "XD", "IXC", "XC"],        // Wednesday
+            4: ["XB", "XA", "IXA", "IXC"],        // Thursday
+            5: ["XB", "XC", "IXA"]                // Friday
         };
+
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let activeClassId = "";
+        let activeClassName = "";
 
         function verifyPin() {
             let pin = document.getElementById('pinInput').value;
@@ -201,43 +281,67 @@
             }
         }
 
-        let activeClassId = "";
-
         function updateDaySchedule() {
             let dateVal = document.getElementById('attendanceDate').value;
-            let dateObj = dateVal ? new Date(dateVal) : new Date();
-            let dayOfWeek = dateObj.getDay(); // 0: Sun, 1: Mon ... 5: Fri, 6: Sat
+            let dateObj = dateVal ? new Date(dateVal + "T00:00:00") : new Date();
+            let dayOfWeek = dateObj.getDay();
+            let dayName = dayNames[dayOfWeek];
 
-            let scheduled = timetable[dayOfWeek];
-            if (!scheduled) {
-                // Fallback show all if weekend
-                scheduled = [
-                    {id: "XA", name: "Class X-A"}, {id: "XB", name: "Class X-B"}, {id: "XC", name: "Class X-C"}, {id: "XD", name: "Class X-D"}, {id: "XE", name: "Class X-E"},
-                    {id: "IXA", name: "Class IX-A"}, {id: "IXB", name: "Class IX-B"}, {id: "IXC", name: "Class IX-C"}, {id: "IXD", name: "Class IX-D"}, {id: "IXE", name: "Class IX-E"}
-                ];
+            document.getElementById('scheduledLabel').innerText = `📅 Scheduled Classes for ${dayName} (As Per Timetable):`;
+
+            let scheduledIds = timetable[dayOfWeek] || [];
+            let scheduledContainer = document.getElementById('scheduledButtonsList');
+            let otherContainer = document.getElementById('otherButtonsList');
+            
+            scheduledContainer.innerHTML = "";
+            otherContainer.innerHTML = "";
+
+            if (scheduledIds.length === 0) {
+                scheduledContainer.innerHTML = `<span style="font-size:13px; color:#64748b;">No regular classes scheduled on ${dayName}. Select any class below:</span>`;
             }
 
-            let container = document.getElementById('classButtonsList');
-            container.innerHTML = "";
-
-            scheduled.forEach((cls, index) => {
+            allClassesList.forEach(cls => {
                 let btn = document.createElement('button');
                 btn.type = "button";
-                btn.className = "class-btn" + (index === 0 ? " active" : "");
                 btn.innerText = cls.name;
-                btn.onclick = function() {
-                    document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeClassId = cls.id;
-                    loadStudents(cls.id);
-                };
-                container.appendChild(btn);
+                
+                if (scheduledIds.includes(cls.id)) {
+                    btn.className = "class-btn";
+                    btn.onclick = () => selectClass(cls.id, cls.name, btn);
+                    scheduledContainer.appendChild(btn);
+                } else {
+                    btn.className = "class-btn other-btn";
+                    btn.onclick = () => selectClass(cls.id, cls.name, btn);
+                    otherContainer.appendChild(btn);
+                }
             });
 
-            if (scheduled.length > 0) {
-                activeClassId = scheduled[0].id;
-                loadStudents(activeClassId);
-            }
+            // Reset view so no students show automatically until user clicks a class
+            document.getElementById('attendanceContent').style.display = 'none';
+            document.getElementById('emptyPrompt').style.display = 'block';
+            activeClassId = "";
+            activeClassName = "";
+        }
+
+        function selectClass(classId, className, btnElement) {
+            document.querySelectorAll('.class-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            activeClassId = classId;
+            activeClassName = className;
+
+            document.getElementById('emptyPrompt').style.display = 'none';
+            document.getElementById('attendanceContent').style.display = 'block';
+
+            updateBanner();
+            loadStudents(classId);
+        }
+
+        function updateBanner() {
+            let date = document.getElementById('attendanceDate').value;
+            let type = document.getElementById('reportType').value;
+            document.getElementById('bannerClass').innerText = `${activeClassName} (${type})`;
+            document.getElementById('bannerDate').innerText = `Date: ${date}`;
         }
 
         function loadStudents(classKey) {
@@ -245,34 +349,67 @@
             let tbody = document.getElementById('studentTableBody');
             tbody.innerHTML = "";
 
-            list.forEach((student) => {
-                let row = `<tr>
+            list.forEach((student, idx) => {
+                let tr = document.createElement('tr');
+                tr.className = "student-row";
+                tr.dataset.status = "Present";
+                tr.dataset.roll = student.roll;
+                tr.dataset.name = student.name;
+
+                tr.innerHTML = `
                     <td>${student.roll}</td>
                     <td>${student.name}</td>
                     <td>
-                        <select class="status-select" onchange="updateSummary()">
-                            <option value="Present">Present</option>
-                            <option value="Absent">Absent</option>
-                            <option value="Leave">Leave</option>
-                            <option value="Late">Late</option>
-                        </select>
+                        <div class="status-pills">
+                            <span class="pill P selected" onclick="setStatus(this, 'Present')">P</span>
+                            <span class="pill A" onclick="setStatus(this, 'Absent')">A</span>
+                            <span class="pill L" onclick="setStatus(this, 'Leave')">L</span>
+                            <span class="pill Lt" onclick="setStatus(this, 'Late')">Lt</span>
+                            <span class="pill B" onclick="setStatus(this, 'Bunk')">B</span>
+                        </div>
+                        <span class="print-status-text" style="color: #16a34a;">Present</span>
                     </td>
-                </tr>`;
-                tbody.innerHTML += row;
+                `;
+                tbody.appendChild(tr);
             });
             updateSummary();
         }
 
-        function updateSummary() {
-            let selects = document.querySelectorAll('.status-select');
-            let total = selects.length;
-            let present = 0, absent = 0, leave = 0, late = 0;
+        function setStatus(pillElem, status) {
+            let row = pillElem.closest('tr');
+            row.dataset.status = status;
 
-            selects.forEach(select => {
-                if (select.value === 'Present') present++;
-                else if (select.value === 'Absent') absent++;
-                else if (select.value === 'Leave') leave++;
-                else if (select.value === 'Late') late++;
+            let pills = row.querySelectorAll('.pill');
+            pills.forEach(p => p.classList.remove('selected'));
+            pillElem.classList.add('selected');
+
+            let printSpan = row.querySelector('.print-status-text');
+            printSpan.innerText = status;
+            
+            const colors = {
+                'Present': '#16a34a',
+                'Absent': '#dc2626',
+                'Leave': '#d97706',
+                'Late': '#7c3aed',
+                'Bunk': '#1e293b'
+            };
+            printSpan.style.color = colors[status] || '#000';
+
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let rows = document.querySelectorAll('.student-row');
+            let total = rows.length;
+            let present = 0, absent = 0, leave = 0, late = 0, bunk = 0;
+
+            rows.forEach(r => {
+                let s = r.dataset.status;
+                if (s === 'Present') present++;
+                else if (s === 'Absent') absent++;
+                else if (s === 'Leave') leave++;
+                else if (s === 'Late') late++;
+                else if (s === 'Bunk') bunk++;
             });
 
             document.getElementById('totalCount').innerText = total;
@@ -280,11 +417,11 @@
             document.getElementById('absentCount').innerText = absent;
             document.getElementById('leaveCount').innerText = leave;
             document.getElementById('lateCount').innerText = late;
+            document.getElementById('bunkCount').innerText = bunk;
         }
 
         function shareWhatsApp() {
-            let activeBtn = document.querySelector('.class-btn.active');
-            let className = activeBtn ? activeBtn.innerText : "";
+            if (!activeClassId) return;
             let date = document.getElementById('attendanceDate').value;
             let type = document.getElementById('reportType').value;
             let total = document.getElementById('totalCount').innerText;
@@ -292,18 +429,30 @@
             let absent = document.getElementById('absentCount').innerText;
             let leave = document.getElementById('leaveCount').innerText;
             let late = document.getElementById('lateCount').innerText;
+            let bunk = document.getElementById('bunkCount').innerText;
+
+            let absentList = [], bunkList = [], lateList = [];
+            document.querySelectorAll('.student-row').forEach(r => {
+                let st = r.dataset.status;
+                let info = `${r.dataset.roll} - ${r.dataset.name}`;
+                if (st === 'Absent') absentList.push(info);
+                else if (st === 'Bunk') bunkList.push(info);
+                else if (st === 'Late') lateList.push(info);
+            });
 
             let report = `📋 *APS&C E-Attendance Report* 📋\n`;
-            report += `🏫 *Class:* ${className}\n`;
+            report += `🏫 *Class:* ${activeClassName}\n`;
             report += `📌 *Type:* ${type}\n`;
             report += `📅 *Date:* ${date}\n\n`;
-            report += `👥 *Total Students:* ${total}\n`;
-            report += `✅ *Present:* ${present}\n`;
-            report += `❌ *Absent:* ${absent}\n`;
-            report += `🏖️ *Leave:* ${leave}\n`;
-            report += `⏰ *Late:* ${late}\n\n`;
-            report += `Teacher: Syed Muhammad Umer Fareed\n`;
-            report += `Army Public School & College, Karachi`;
+            report += `👥 *Total:* ${total} | ✅ *Present:* ${present}\n`;
+            report += `❌ *Absent:* ${absent} | 🏖️ *Leave:* ${leave}\n`;
+            report += `⏰ *Late:* ${late} | 🚨 *Bunk:* ${bunk}\n`;
+
+            if (absentList.length > 0) report += `\n❌ *Absent Students:*\n` + absentList.join('\n') + `\n`;
+            if (bunkList.length > 0) report += `\n🚨 *Bunk Students:*\n` + bunkList.join('\n') + `\n`;
+            if (lateList.length > 0) report += `\n⏰ *Late Students:*\n` + lateList.join('\n') + `\n`;
+
+            report += `\n*Teacher:* Syed Muhammad Umer Fareed`;
 
             let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(report);
             window.open(url, "_blank");
