@@ -21,6 +21,11 @@
         .header p { margin: 2px 0; font-size: 13px; color: #555; }
         .portal-badge { display: inline-block; margin-top: 6px; padding: 4px 12px; background: #e8f5e9; color: #1b4d3e; font-size: 12px; font-weight: bold; border-radius: 20px; }
         
+        /* Live Period Alert Box */
+        .live-alert-box { background: linear-gradient(135deg, #1b4d3e, #2d6a4f); color: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 3px 10px rgba(27,77,62,0.2); }
+        .live-alert-box h3 { margin: 0 0 4px 0; font-size: 14px; display: flex; align-items: center; gap: 6px; color: #ffd166; }
+        .live-alert-box p { margin: 2px 0; font-size: 13.5px; }
+
         .control-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .control-group { flex: 1; min-width: 150px; }
         .control-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 12px; color: #1b4d3e; text-transform: uppercase; }
@@ -92,7 +97,7 @@
             @page { size: A4 portrait; margin: 5mm 8mm; }
             body { background: white; padding: 0; margin: 0; font-size: 10px; }
             .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; border: none; }
-            #loginScreen, .btn-container, .class-section, .control-row, #emptyPrompt, .status-pills, #toastMsg, .save-status-badge { display: none !important; }
+            #loginScreen, .btn-container, .class-section, .control-row, #emptyPrompt, .status-pills, #toastMsg, .save-status-badge, .live-alert-box { display: none !important; }
             #portalScreen, #attendanceContent { display: block !important; }
             
             .header { padding-bottom: 4px; margin-bottom: 6px; border-bottom: 1.5px solid #1b4d3e; }
@@ -135,7 +140,13 @@
             <h2>ARMY PUBLIC SCHOOL & COLLEGE</h2>
             <p>Faisal, Karachi - Senior Section</p>
             <p><b>Subject:</b> Tarjuma-tul-Quran / Islamiyat | <b>Teacher:</b> Syed Muhammad Umer Fareed</p>
-            <span class="portal-badge">E-ATTENDANCE PORTAL (OFFLINE READY)</span>
+            <span class="portal-badge">E-ATTENDANCE PORTAL (WINTER TIMING & OFFLINE READY)</span>
+        </div>
+
+        <!-- LIVE PERIOD & WINTER TIMING ALERT BOX -->
+        <div class="live-alert-box">
+            <h3>🔔 Live Schedule Alert (Winter Timing)</h3>
+            <p id="liveStatusText">Checking current period...</p>
         </div>
 
         <div class="control-row">
@@ -155,7 +166,7 @@
 
         <!-- 1. Scheduled Classes According to Timetable -->
         <div class="class-section">
-            <label id="scheduledLabel">📅 Today's Scheduled Classes (As Per Timetable):</label>
+            <label id="scheduledLabel">📅 Today's Scheduled Classes (As Per Winter Timetable):</label>
             <div id="scheduledButtonsList" class="class-btns"></div>
         </div>
 
@@ -269,13 +280,38 @@
             {id: "IXE", name: "Class IX-E"}
         ];
 
-        // Timetable mapping for Teacher Umar
-        const timetable = {
-            1: ["XD", "IXD", "XE", "IXB", "IXE"], // Monday
-            2: ["XA", "XE", "IXB", "IXE"],        // Tuesday
-            3: ["IXD", "XD", "IXC", "XC"],        // Wednesday
-            4: ["XB", "XA", "IXA", "IXC"],        // Thursday
-            5: ["XB", "XC", "IXA"]                // Friday
+        // Teacher Umar's daily timetable structure with Period Numbers
+        const timetableDetails = {
+            1: [ // Monday
+                {p: 2, start: "08:55", end: "09:35", id: "XD", name: "Class X-D"},
+                {p: 3, start: "09:35", end: "10:15", id: "IXD", name: "Class IX-D"},
+                {p: 4, start: "10:15", end: "10:55", id: "XE", name: "Class X-E"},
+                {p: 6, start: "11:55", end: "12:40", id: "IXB", name: "Class IX-B"},
+                {p: 7, start: "12:40", end: "01:20", id: "IXE", name: "Class IX-E"}
+            ],
+            2: [ // Tuesday
+                {p: 2, start: "08:55", end: "09:35", id: "XA", name: "Class X-A"},
+                {p: 3, start: "09:35", end: "10:15", id: "XE", name: "Class X-E"},
+                {p: 5, start: "10:55", end: "11:35", id: "IXB", name: "Class IX-B"},
+                {p: 7, start: "12:40", end: "01:20", id: "IXE", name: "Class IX-E"}
+            ],
+            3: [ // Wednesday
+                {p: 1, start: "08:50", end: "09:25", id: "IXD", name: "Class IX-D"},
+                {p: 2, start: "09:25", end: "10:00", id: "XD", name: "Class X-D"},
+                {p: 5, start: "11:10", end: "11:50", id: "IXC", name: "Class IX-C"},
+                {p: 6, start: "12:10", end: "12:50", id: "XC", name: "Class X-C"}
+            ],
+            4: [ // Thursday
+                {p: 3, start: "09:35", end: "10:15", id: "XB", name: "Class X-B"},
+                {p: 4, start: "10:15", end: "10:55", id: "XA", name: "Class X-A"},
+                {p: 5, start: "10:55", end: "11:35", id: "IXA", name: "Class IX-A"},
+                {p: 7, start: "12:40", end: "01:20", id: "IXC", name: "Class IX-C"}
+            ],
+            5: [ // Friday
+                {p: 2, start: "08:40", end: "09:10", id: "XB", name: "Class X-B"},
+                {p: 3, start: "09:10", end: "09:40", id: "XC", name: "Class X-C"},
+                {p: 5, start: "10:10", end: "10:40", id: "IXA", name: "Class IX-A"}
+            ]
         };
 
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -293,9 +329,58 @@
                 document.getElementById('portalScreen').style.display = 'block';
                 document.getElementById('attendanceDate').valueAsDate = new Date();
                 updateDaySchedule();
+                setInterval(checkLivePeriod, 10000);
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
             }
+        }
+
+        function timeToMins(tStr) {
+            let parts = tStr.split(":");
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        }
+
+        function checkLivePeriod() {
+            let dateVal = document.getElementById('attendanceDate').value;
+            let todayStr = new Date().toISOString().split('T')[0];
+            
+            if (dateVal !== todayStr) {
+                document.getElementById('liveStatusText').innerHTML = `Viewing date: <b>${dateVal}</b>`;
+                return;
+            }
+
+            let now = new Date();
+            let currentMins = now.getHours() * 60 + now.getMinutes();
+            let dayOfWeek = now.getDay();
+
+            let periods = timetableDetails[dayOfWeek] || [];
+            let currentPeriodFound = null;
+            let nextPeriodFound = null;
+
+            for (let i = 0; i < periods.length; i++) {
+                let p = periods[i];
+                let sMins = timeToMins(p.start);
+                let eMins = timeToMins(p.end);
+
+                if (currentMins >= sMins && currentMins <= eMins) {
+                    currentPeriodFound = p;
+                    break;
+                } else if (currentMins < sMins) {
+                    nextPeriodFound = p;
+                    break;
+                }
+            }
+
+            let alertBoxText = "";
+            if (currentPeriodFound) {
+                alertBoxText = `🔴 <b>CURRENT PERIOD (${currentPeriodFound.p}th Period - ${currentPeriodFound.start} to ${currentPeriodFound.end}):</b> Head to <span style="background:#ffd166; color:#000; padding:2px 6px; border-radius:4px; font-weight:bold;">${currentPeriodFound.name}</span> immediately!`;
+            } else if (nextPeriodFound) {
+                alertBoxText = `⏳ <b>Next Class:</b> <span style="color:#ffd166; font-weight:bold;">${nextPeriodFound.name}</span> (${nextPeriodFound.p}th Period starts at ${nextPeriodFound.start})`;
+            } else {
+                alertBoxText = `🟢 <b>School Hours Ended / Free Time</b> for today. Select any class below if needed.`;
+            }
+
+            document.getElementById('liveStatusText').innerHTML = alertBoxText;
         }
 
         function updateDaySchedule() {
@@ -304,40 +389,54 @@
             let dayOfWeek = dateObj.getDay();
             let dayName = dayNames[dayOfWeek];
 
-            document.getElementById('scheduledLabel').innerText = `📅 Scheduled Classes for ${dayName} (As Per Timetable):`;
+            document.getElementById('scheduledLabel').innerText = `📅 Scheduled Classes for ${dayName} (As Per Winter Timetable):`;
 
-            let scheduledIds = timetable[dayOfWeek] || [];
+            let scheduledPeriods = timetableDetails[dayOfWeek] || [];
+            let scheduledIds = scheduledPeriods.map(p => p.id);
+            
             let scheduledContainer = document.getElementById('scheduledButtonsList');
             let otherContainer = document.getElementById('otherButtonsList');
             
             scheduledContainer.innerHTML = "";
             otherContainer.innerHTML = "";
 
-            if (scheduledIds.length === 0) {
+            if (scheduledPeriods.length === 0) {
                 scheduledContainer.innerHTML = `<span style="font-size:13px; color:#64748b;">No regular classes scheduled on ${dayName}. Select any class below:</span>`;
             }
 
-            allClassesList.forEach(cls => {
+            scheduledPeriods.forEach(pObj => {
                 let btn = document.createElement('button');
                 btn.type = "button";
-                btn.dataset.cid = cls.id;
-                btn.dataset.cname = cls.name;
+                btn.dataset.cid = pObj.id;
+                btn.dataset.cname = pObj.name;
                 
-                let isSaved = localStorage.getItem(getStorageKey(dateVal, cls.id)) !== null;
-                btn.innerText = isSaved ? `${cls.name} ✅` : cls.name;
+                let isSaved = localStorage.getItem(getStorageKey(dateVal, pObj.id)) !== null;
+                let checkMark = isSaved ? " ✅" : "";
+                btn.innerText = `${pObj.name} (${pObj.p}th - ${pObj.start})${checkMark}`;
 
-                if (scheduledIds.includes(cls.id)) {
-                    btn.className = "class-btn" + (isSaved ? " saved-class" : "");
-                    btn.onclick = () => selectClass(cls.id, cls.name, btn);
-                    scheduledContainer.appendChild(btn);
-                } else {
+                btn.className = "class-btn" + (isSaved ? " saved-class" : "");
+                btn.onclick = () => selectClass(pObj.id, pObj.name, btn);
+                scheduledContainer.appendChild(btn);
+            });
+
+            allClassesList.forEach(cls => {
+                if (!scheduledIds.includes(cls.id)) {
+                    let btn = document.createElement('button');
+                    btn.type = "button";
+                    btn.dataset.cid = cls.id;
+                    btn.dataset.cname = cls.name;
+                    
+                    let isSaved = localStorage.getItem(getStorageKey(dateVal, cls.id)) !== null;
+                    btn.innerText = isSaved ? `${cls.name} ✅` : cls.name;
+
                     btn.className = "class-btn other-btn" + (isSaved ? " saved-class" : "");
                     btn.onclick = () => selectClass(cls.id, cls.name, btn);
                     otherContainer.appendChild(btn);
                 }
             });
 
-            // Keep student list hidden until user explicitly taps a class button
+            checkLivePeriod();
+
             document.getElementById('attendanceContent').style.display = 'none';
             document.getElementById('emptyPrompt').style.display = 'block';
             activeClassId = "";
@@ -350,7 +449,9 @@
                 let cid = btn.dataset.cid;
                 let cname = btn.dataset.cname;
                 let isSaved = localStorage.getItem(getStorageKey(dateVal, cid)) !== null;
-                btn.innerText = isSaved ? `${cname} ✅` : cname;
+                if (btn.classList.contains('other-btn')) {
+                    btn.innerText = isSaved ? `${cname} ✅` : cname;
+                }
                 if (isSaved) btn.classList.add('saved-class');
                 else btn.classList.remove('saved-class');
             });
@@ -449,7 +550,7 @@
             printSpan.style.color = colors[status] || '#000';
 
             updateSummary();
-            saveToLocalStorage(false); // Auto-save silently on every touch
+            saveToLocalStorage(false);
         }
 
         function saveToLocalStorage(showNotification) {
